@@ -45,13 +45,13 @@ const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({ isGuest = false, 
 
       if (error) throw error
       
-      const formattedData = data?.map(item => ({
+      const formattedData = (data || []).map(item => ({
         id: item.id,
         name: item.name,
         totalClasses: item.total_classes,
         attendedClasses: item.attended_classes,
         requiredPercentage: item.required_percentage
-      })) || []
+      }))
       
       setSubjects(formattedData)
     } catch (error) {
@@ -94,7 +94,7 @@ const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({ isGuest = false, 
         if (error) throw error
 
         if (data) {
-          setSubjects(prev => prev.map(s => 
+          setSubjects(prev => (prev || []).map(s => 
             s.id === subject.id 
               ? { ...s, id: data.id }
               : s
@@ -114,11 +114,12 @@ const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({ isGuest = false, 
       attendedClasses: 0,
       requiredPercentage: 75
     }
-    setSubjects([...subjects, newSubject])
+    setSubjects(prev => [...(prev || []), newSubject])
   }
 
   const updateSubject = async (id: string, field: keyof Subject, value: string | number) => {
-    const updatedSubjects = subjects.map(subject => {
+    const currentSubjects = subjects || []
+    const updatedSubjects = currentSubjects.map(subject => {
       if (subject.id === id) {
         const updatedSubject = { ...subject, [field]: value }
         
@@ -179,13 +180,14 @@ const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({ isGuest = false, 
     return classesNeeded
   }
 
+  const safeSubjects = subjects || []
   const overallStats = {
-    totalClasses: subjects.reduce((sum, subject) => sum + subject.totalClasses, 0),
-    attendedClasses: subjects.reduce((sum, subject) => sum + subject.attendedClasses, 0),
-    averagePercentage: subjects.length > 0 
-      ? (subjects.reduce((sum, subject) => 
+    totalClasses: safeSubjects.reduce((sum, subject) => sum + subject.totalClasses, 0),
+    attendedClasses: safeSubjects.reduce((sum, subject) => sum + subject.attendedClasses, 0),
+    averagePercentage: safeSubjects.length > 0 
+      ? (safeSubjects.reduce((sum, subject) => 
           sum + parseFloat(calculatePercentage(subject.attendedClasses, subject.totalClasses))
-        , 0) / subjects.length).toFixed(1)
+        , 0) / safeSubjects.length).toFixed(1)
       : '0.0'
   }
 
@@ -253,7 +255,7 @@ const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({ isGuest = false, 
         <h2 className="text-lg font-semibold text-white mb-4">Subjects</h2>
         
         <div className="space-y-3">
-          {subjects.map((subject) => {
+          {safeSubjects.map((subject) => {
             const percentage = calculatePercentage(subject.attendedClasses, subject.totalClasses)
             const status = getAttendanceStatus(subject.attendedClasses, subject.totalClasses, subject.requiredPercentage)
             const classesNeeded = calculateClassesNeeded(subject.attendedClasses, subject.totalClasses, subject.requiredPercentage)
@@ -339,7 +341,7 @@ const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({ isGuest = false, 
           })}
         </div>
         
-        {subjects.length === 0 && (
+        {safeSubjects.length === 0 && (
           <div className="text-center py-8">
             <Calendar className="w-12 h-12 text-white/30 mx-auto mb-4" />
             <p className="text-white/70 text-sm">No subjects added yet. Add your first subject to start tracking!</p>

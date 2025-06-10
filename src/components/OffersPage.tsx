@@ -176,9 +176,10 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
     setShowAddForm(true)
   }
 
+  const safeOffers = offers || []
   const filteredOffers = selectedCategory === 'all' 
-    ? offers 
-    : offers.filter(offer => offer.category === selectedCategory)
+    ? safeOffers 
+    : safeOffers.filter(offer => offer.category === selectedCategory)
 
   const isExpired = (expiresAt?: string) => {
     if (!expiresAt) return false

@@ -120,7 +120,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
       if (error) throw error
 
       const roomsWithParticipants = await Promise.all(
-        roomsData.map(async (item: any) => {
+        (roomsData || []).map(async (item: any) => {
           const room = item.chat_rooms
           
           // Get participants using a simpler query
@@ -130,7 +130,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
             .eq('room_id', room.id)
 
           // Get user profiles for participants
-          const participantIds = participantData?.map(p => p.user_id) || []
+          const participantIds = (participantData || []).map(p => p.user_id)
           const { data: profiles } = await supabase
             .from('user_profiles')
             .select('*')
@@ -200,22 +200,22 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
       if (error) throw error
 
       // Get sender names for all messages
-      const senderIds = [...new Set(data?.map(msg => msg.sender_id) || [])]
+      const senderIds = [...new Set((data || []).map(msg => msg.sender_id))]
       const { data: senderProfiles } = await supabase
         .from('user_profiles')
         .select('user_id, display_name')
         .in('user_id', senderIds)
 
-      const senderMap = new Map(senderProfiles?.map(p => [p.user_id, p.display_name]) || [])
+      const senderMap = new Map((senderProfiles || []).map(p => [p.user_id, p.display_name]))
 
-      const formattedMessages = data?.map(msg => ({
+      const formattedMessages = (data || []).map(msg => ({
         id: msg.id,
         content: msg.content,
         sender_id: msg.sender_id,
         sender_name: senderMap.get(msg.sender_id) || 'Unknown',
         created_at: msg.created_at,
         message_type: msg.message_type || 'text'
-      })) || []
+      }))
 
       setMessages(formattedMessages)
     } catch (error) {
@@ -239,7 +239,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
         `)
         .eq('user_id', user.id)
 
-      const directRooms = existingRoom?.filter(item => !item.chat_rooms.is_group) || []
+      const directRooms = (existingRoom || []).filter(item => !item.chat_rooms.is_group)
       
       for (const roomData of directRooms) {
         const { data: participants } = await supabase
@@ -247,8 +247,8 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
           .select('user_id')
           .eq('room_id', roomData.room_id)
 
-        if (participants?.length === 2 && 
-            participants.some(p => p.user_id === targetUserId)) {
+        if ((participants || []).length === 2 && 
+            (participants || []).some(p => p.user_id === targetUserId)) {
           setActiveRoom(roomData.room_id)
           setShowUserList(false)
           setShowSidebar(false)
@@ -387,7 +387,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
           file_name: file.name
         }
         
-        setMessages(prev => [...prev, newMsg])
+        setMessages(prev => [...(prev || []), newMsg])
         loadRooms()
       }
     } catch (error) {
@@ -433,7 +433,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
           message_type: 'text'
         }
         
-        setMessages(prev => [...prev, newMsg])
+        setMessages(prev => [...(prev || []), newMsg])
         
         // Also reload rooms to update last message
         loadRooms()
@@ -458,11 +458,11 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
     if (room.name) return room.name
     if (room.is_group) return 'Group Chat'
     
-    const otherParticipant = room.participants.find(p => p.user_id !== user?.id)
+    const otherParticipant = (room.participants || []).find(p => p.user_id !== user?.id)
     return otherParticipant?.display_name || 'Unknown User'
   }
 
-  const filteredUsers = users.filter(u => 
+  const filteredUsers = (users || []).filter(u => 
     u.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.user_id.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -531,6 +531,9 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
   }
 
   if (!isOpen) return null
+
+  const safeRooms = rooms || []
+  const safeMessages = messages || []
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-4">
@@ -727,7 +730,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
 
           {/* Conversations List */}
           <div className="flex-1 overflow-y-auto">
-            {rooms.map((room) => (
+            {safeRooms.map((room) => (
               <button
                 key={room.id}
                 onClick={() => {
@@ -747,7 +750,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                         getInitials(getRoomDisplayName(room))
                       )}
                     </div>
-                    {!room.is_group && room.participants.find(p => p.user_id !== user?.id)?.status === 'online' && (
+                    {!room.is_group && (room.participants || []).find(p => p.user_id !== user?.id)?.status === 'online' && (
                       <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-900"></div>
                     )}
                   </div>
@@ -775,7 +778,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
               </button>
             ))}
             
-            {rooms.length === 0 && (
+            {safeRooms.length === 0 && (
               <div className="p-8 text-center">
                 <MessageCircle className="w-12 h-12 text-white/20 mx-auto mb-3" />
                 <p className="text-white/50 text-sm mb-2">No conversations yet</p>
@@ -799,18 +802,18 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                     <ArrowLeft className="w-4 h-4 text-white/80" />
                   </button>
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-medium">
-                    {rooms.find(r => r.id === activeRoom)?.is_group ? (
+                    {safeRooms.find(r => r.id === activeRoom)?.is_group ? (
                       <Users className="w-5 h-5" />
                     ) : (
-                      getInitials(getRoomDisplayName(rooms.find(r => r.id === activeRoom) || {} as ChatRoom))
+                      getInitials(getRoomDisplayName(safeRooms.find(r => r.id === activeRoom) || {} as ChatRoom))
                     )}
                   </div>
                   <div>
                     <h3 className="text-white/90 font-medium text-sm">
-                      {getRoomDisplayName(rooms.find(r => r.id === activeRoom) || {} as ChatRoom)}
+                      {getRoomDisplayName(safeRooms.find(r => r.id === activeRoom) || {} as ChatRoom)}
                     </h3>
                     <p className="text-white/50 text-xs">
-                      {rooms.find(r => r.id === activeRoom)?.participants.length || 0} members
+                      {(safeRooms.find(r => r.id === activeRoom)?.participants || []).length} members
                     </p>
                   </div>
                 </div>
@@ -829,12 +832,12 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
 
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages.map((message, index) => {
+                {safeMessages.map((message, index) => {
                   const isOwn = message.sender_id === user?.id
-                  const showAvatar = index === 0 || messages[index - 1].sender_id !== message.sender_id
-                  const showTime = index === messages.length - 1 || 
-                    messages[index + 1].sender_id !== message.sender_id ||
-                    new Date(messages[index + 1].created_at).getTime() - new Date(message.created_at).getTime() > 300000 // 5 minutes
+                  const showAvatar = index === 0 || safeMessages[index - 1].sender_id !== message.sender_id
+                  const showTime = index === safeMessages.length - 1 || 
+                    safeMessages[index + 1].sender_id !== message.sender_id ||
+                    new Date(safeMessages[index + 1].created_at).getTime() - new Date(message.created_at).getTime() > 300000 // 5 minutes
 
                   return (
                     <div

@@ -91,7 +91,7 @@ const GPACalculator: React.FC<GPACalculatorProps> = ({ isGuest = false, onSignUp
 
         if (data) {
           setCourses(prevCourses => 
-            prevCourses.map(c => 
+            (prevCourses || []).map(c => 
               c.id === course.id ? { ...c, id: data.id } : c
             )
           )
@@ -125,18 +125,19 @@ const GPACalculator: React.FC<GPACalculatorProps> = ({ isGuest = false, onSignUp
       credits: 3,
       grade: 'A'
     }
-    setCourses([...courses, newCourse])
+    setCourses(prev => [...(prev || []), newCourse])
   }
 
   const deleteCourse = async (id: string) => {
-    setCourses(courses.filter(course => course.id !== id))
+    setCourses(prev => (prev || []).filter(course => course.id !== id))
     if (user && isValidUUID(id)) {
       await deleteCourseFromDB(id)
     }
   }
 
   const updateCourse = async (id: string, field: keyof Course, value: string | number) => {
-    const updatedCourses = courses.map(course => 
+    const currentCourses = courses || []
+    const updatedCourses = currentCourses.map(course => 
       course.id === id ? { ...course, [field]: value } : course
     )
     setCourses(updatedCourses)
@@ -150,13 +151,14 @@ const GPACalculator: React.FC<GPACalculatorProps> = ({ isGuest = false, onSignUp
   }
 
   const calculateGPA = () => {
-    if (courses.length === 0) return '0.00'
+    const safeCourses = courses || []
+    if (safeCourses.length === 0) return '0.00'
     
-    const totalPoints = courses.reduce((sum, course) => {
+    const totalPoints = safeCourses.reduce((sum, course) => {
       return sum + (course.credits * gradePoints[course.grade])
     }, 0)
     
-    const totalCredits = courses.reduce((sum, course) => sum + course.credits, 0)
+    const totalCredits = safeCourses.reduce((sum, course) => sum + course.credits, 0)
     
     return totalCredits > 0 ? (totalPoints / totalCredits).toFixed(2) : '0.00'
   }
@@ -169,6 +171,8 @@ const GPACalculator: React.FC<GPACalculatorProps> = ({ isGuest = false, onSignUp
     if (numGpa >= 6.0) return 'text-orange-400'
     return 'text-red-400'
   }
+
+  const safeCourses = courses || []
 
   return (
     <div className="space-y-4">
@@ -219,7 +223,7 @@ const GPACalculator: React.FC<GPACalculatorProps> = ({ isGuest = false, onSignUp
         </div>
 
         <div className="space-y-3">
-          {courses.map((course) => (
+          {safeCourses.map((course) => (
             <div key={course.id} className="grid grid-cols-1 md:grid-cols-5 gap-3 p-3 bg-white/5 rounded-xl">
               <div className="md:col-span-2">
                 <label className="block text-white/70 text-xs mb-1">Course Name</label>
@@ -271,7 +275,7 @@ const GPACalculator: React.FC<GPACalculatorProps> = ({ isGuest = false, onSignUp
           ))}
         </div>
 
-        {courses.length === 0 && (
+        {safeCourses.length === 0 && (
           <div className="text-center py-8">
             <Calculator className="w-12 h-12 text-white/30 mx-auto mb-4" />
             <p className="text-white/70 text-sm">No courses added yet. Add your first course to get started!</p>
@@ -280,19 +284,19 @@ const GPACalculator: React.FC<GPACalculatorProps> = ({ isGuest = false, onSignUp
       </div>
 
       {/* GPA Breakdown Grid */}
-      {courses.length > 0 && (
+      {safeCourses.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
             <h3 className="text-white/70 text-xs mb-2">Total Credits</h3>
             <p className="text-xl font-bold text-white">
-              {courses.reduce((sum, course) => sum + course.credits, 0)}
+              {safeCourses.reduce((sum, course) => sum + course.credits, 0)}
             </p>
           </div>
           
           <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
             <h3 className="text-white/70 text-xs mb-2">Grade Points</h3>
             <p className="text-xl font-bold text-white">
-              {courses.reduce((sum, course) => sum + (course.credits * gradePoints[course.grade]), 0).toFixed(1)}
+              {safeCourses.reduce((sum, course) => sum + (course.credits * gradePoints[course.grade]), 0).toFixed(1)}
             </p>
           </div>
           
