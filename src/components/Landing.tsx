@@ -26,13 +26,13 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp, onTryFree, onSignIn, onSi
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  // Parallax effect for hero section
+  // Parallax effect for hero section only
   useEffect(() => {
     const handleScroll = () => {
       if (heroRef.current) {
         const scrolled = window.pageYOffset
-        const parallax = scrolled * 0.5
-        heroRef.current.style.transform = `translateY(${parallax}px)`
+        const rate = scrolled * -0.3 // Reduced parallax effect
+        heroRef.current.style.transform = `translateY(${rate}px)`
       }
     }
 
@@ -126,7 +126,7 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp, onTryFree, onSignIn, onSi
   ]
 
   return (
-    <div className="min-h-screen bg-white relative overflow-hidden">
+    <div className="min-h-screen bg-white relative">
       {/* Custom Cursor */}
       <div
         ref={cursorRef}
@@ -166,33 +166,8 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp, onTryFree, onSignIn, onSi
         </svg>
       </div>
 
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-emerald-400/20 to-cyan-600/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-pink-400/10 to-yellow-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-      </div>
-
-      {/* Floating Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="absolute animate-float"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${i * 0.5}s`,
-              animationDuration: `${3 + Math.random() * 2}s`
-            }}
-          >
-            <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-60"></div>
-          </div>
-        ))}
-      </div>
-
       {/* Header */}
-      <header className="relative z-40 border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0">
+      <header className="relative z-50 border-b border-gray-100 bg-white/95 backdrop-blur-sm sticky top-0">
         <nav className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3 group">
@@ -299,72 +274,99 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp, onTryFree, onSignIn, onSi
       </header>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative z-30 pt-20 pb-32 px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-5xl mx-auto">
-            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full px-6 py-3 mb-8 animate-fadeInUp">
-              <Sparkles className="w-4 h-4 text-gray-600" />
-              <span className="text-gray-700 text-sm font-medium">10-point GPA scale support</span>
-              <Zap className="w-4 h-4 text-yellow-500" />
-            </div>
-            
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-black mb-8 leading-tight tracking-tight animate-fadeInUp" style={{ animationDelay: '200ms' }}>
-              Your Academic
-              <br />
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
-                Success Hub
-              </span>
-            </h1>
-            
-            <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed animate-fadeInUp" style={{ animationDelay: '400ms' }}>
-              Comprehensive tools for modern students. Calculate grades, track attendance, 
-              manage schedules, and excel in your academic journey.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-md mx-auto animate-fadeInUp" style={{ animationDelay: '600ms' }}>
-              <button
-                onClick={onEnterApp}
-                className="group bg-gradient-to-r from-black to-gray-800 hover:from-gray-800 hover:to-black text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-3 transform hover:scale-105 hover:shadow-2xl"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                <span>Start Journey</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-              </button>
-              <button
-                onClick={onTryFree}
-                className="border-2 border-gray-300 hover:border-gray-400 text-black px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg backdrop-blur-sm"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                Try Free
-              </button>
-            </div>
-          </div>
+      <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-50">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/10 to-purple-600/10 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-emerald-400/10 to-cyan-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-pink-400/5 to-yellow-600/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
         </div>
 
-        {/* Floating 3D Cards */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-10 transform rotate-12 animate-float3d">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl flex items-center justify-center">
-              <Calculator className="w-8 h-8 text-white" />
+        {/* Floating Elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute animate-float"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                animationDelay: `${i * 0.5}s`,
+                animationDuration: `${3 + Math.random() * 2}s`
+              }}
+            >
+              <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-30"></div>
+            </div>
+          ))}
+        </div>
+
+        <div ref={heroRef} className="relative z-10 pt-20 pb-32 px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center max-w-5xl mx-auto">
+              <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full px-6 py-3 mb-8 animate-fadeInUp">
+                <Sparkles className="w-4 h-4 text-gray-600" />
+                <span className="text-gray-700 text-sm font-medium">10-point GPA scale support</span>
+                <Zap className="w-4 h-4 text-yellow-500" />
+              </div>
+              
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-black mb-8 leading-tight tracking-tight animate-fadeInUp" style={{ animationDelay: '200ms' }}>
+                Your Academic
+                <br />
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
+                  Success Hub
+                </span>
+              </h1>
+              
+              <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed animate-fadeInUp" style={{ animationDelay: '400ms' }}>
+                Comprehensive tools for modern students. Calculate grades, track attendance, 
+                manage schedules, and excel in your academic journey.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-6 justify-center max-w-md mx-auto animate-fadeInUp" style={{ animationDelay: '600ms' }}>
+                <button
+                  onClick={onEnterApp}
+                  className="group bg-gradient-to-r from-black to-gray-800 hover:from-gray-800 hover:to-black text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 flex items-center justify-center space-x-3 transform hover:scale-105 hover:shadow-2xl"
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                >
+                  <span>Start Journey</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                </button>
+                <button
+                  onClick={onTryFree}
+                  className="border-2 border-gray-300 hover:border-gray-400 text-black px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg backdrop-blur-sm"
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                >
+                  Try Free
+                </button>
+              </div>
             </div>
           </div>
-          <div className="absolute top-1/3 right-10 transform -rotate-12 animate-float3d" style={{ animationDelay: '1s' }}>
-            <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-2xl flex items-center justify-center">
-              <Clock className="w-8 h-8 text-white" />
+
+          {/* Floating 3D Cards */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/4 left-10 transform rotate-12 animate-float3d">
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-2xl flex items-center justify-center">
+                <Calculator className="w-8 h-8 text-white" />
+              </div>
             </div>
-          </div>
-          <div className="absolute bottom-1/4 left-1/4 transform rotate-6 animate-float3d" style={{ animationDelay: '2s' }}>
-            <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-2xl flex items-center justify-center">
-              <BookOpen className="w-8 h-8 text-white" />
+            <div className="absolute top-1/3 right-10 transform -rotate-12 animate-float3d" style={{ animationDelay: '1s' }}>
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-2xl flex items-center justify-center">
+                <Clock className="w-8 h-8 text-white" />
+              </div>
+            </div>
+            <div className="absolute bottom-1/4 left-1/4 transform rotate-6 animate-float3d" style={{ animationDelay: '2s' }}>
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-600 rounded-2xl shadow-2xl flex items-center justify-center">
+                <BookOpen className="w-8 h-8 text-white" />
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="relative z-20 py-20 px-6 lg:px-8 bg-gradient-to-r from-gray-50 to-white">
+      <section className="relative z-20 py-20 px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -385,7 +387,7 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp, onTryFree, onSignIn, onSi
       </section>
 
       {/* Features Grid */}
-      <section className="relative z-20 py-24 px-6 lg:px-8">
+      <section className="relative z-20 py-24 px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-black mb-6 animate-fadeInUp">
@@ -417,7 +419,7 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp, onTryFree, onSignIn, onSi
       </section>
 
       {/* Benefits Section */}
-      <section className="relative z-20 py-24 px-6 lg:px-8 bg-gradient-to-br from-gray-50 to-white">
+      <section className="relative z-20 py-24 px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
             <div className="animate-fadeInUp">
@@ -481,7 +483,7 @@ const Landing: React.FC<LandingProps> = ({ onEnterApp, onTryFree, onSignIn, onSi
       </section>
 
       {/* Testimonials */}
-      <section className="relative z-20 py-24 px-6 lg:px-8">
+      <section className="relative z-20 py-24 px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl font-bold text-black mb-6 animate-fadeInUp">
