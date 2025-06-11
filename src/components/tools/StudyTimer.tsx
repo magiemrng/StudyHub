@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Play, Pause, Square, RotateCcw, Clock, Crown } from 'lucide-react'
+import { Play, Pause, Square, RotateCcw, Clock, Crown, Timer, BarChart3, Target } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 
@@ -158,149 +158,227 @@ const StudyTimer: React.FC<StudyTimerProps> = ({ isGuest = false, onSignUp }) =>
   }
 
   const totalStudyTime = sessions.reduce((total, session) => total + session.duration, 0)
+  const todaySessions = sessions.filter(s => s.date === new Date().toLocaleDateString()).length
+  const weekSessions = sessions.filter(s => {
+    const sessionDate = new Date(s.date)
+    const weekAgo = new Date()
+    weekAgo.setDate(weekAgo.getDate() - 7)
+    return sessionDate >= weekAgo
+  }).length
 
   return (
-    <div className="space-y-4">
-      {/* Header Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+    <div className="max-w-7xl mx-auto space-y-12">
+      {/* Header */}
+      <div className="space-y-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Study Timer</h1>
-          <p className="text-white/70 text-sm">Use the Pomodoro technique to boost productivity</p>
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 tracking-tight">Study Timer</h1>
+          <p className="text-xl text-gray-600 max-w-3xl leading-relaxed">
+            Boost your productivity with the Pomodoro technique. Focus for 25 minutes, then take a 5-minute break. 
+            Track your study sessions and build consistent habits.
+          </p>
         </div>
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <p className="text-white/70 text-sm mb-1">Total Study Time</p>
-          <p className="text-2xl font-bold text-white">{totalStudyTime} min</p>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-white rounded-2xl p-6 border border-gray-200">
+            <div className="flex items-center space-x-3 mb-3">
+              <Clock className="w-6 h-6 text-purple-600" />
+              <span className="text-gray-600 font-medium">Total Time</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{totalStudyTime}m</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-200">
+            <div className="flex items-center space-x-3 mb-3">
+              <Timer className="w-6 h-6 text-blue-600" />
+              <span className="text-gray-600 font-medium">Today</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{todaySessions}</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-200">
+            <div className="flex items-center space-x-3 mb-3">
+              <BarChart3 className="w-6 h-6 text-emerald-600" />
+              <span className="text-gray-600 font-medium">This Week</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{weekSessions}</p>
+          </div>
+          <div className="bg-white rounded-2xl p-6 border border-gray-200">
+            <div className="flex items-center space-x-3 mb-3">
+              <Target className="w-6 h-6 text-orange-600" />
+              <span className="text-gray-600 font-medium">Sessions</span>
+            </div>
+            <p className="text-3xl font-bold text-gray-900">{sessions.length}</p>
+          </div>
         </div>
       </div>
 
       {/* Guest Banner */}
       {isGuest && (
-        <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-2xl p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
-            <div className="flex items-center space-x-3 md:col-span-3">
-              <Crown className="w-6 h-6 text-amber-400 flex-shrink-0" />
-              <div>
-                <h3 className="text-white font-semibold text-sm">Guest Mode - Sessions Not Saved</h3>
-                <p className="text-white/70 text-xs">Sign up to track your study sessions permanently</p>
-              </div>
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-3xl p-8">
+          <div className="flex items-start space-x-4">
+            <Crown className="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" />
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Guest Mode - Sessions Not Saved</h3>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                You're using the study timer in guest mode. Your study sessions won't be saved permanently. 
+                Sign up to track your progress, build study streaks, and analyze your productivity patterns.
+              </p>
+              <button
+                onClick={onSignUp}
+                className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200"
+              >
+                Sign Up to Track Progress
+              </button>
             </div>
-            <button
-              onClick={onSignUp}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm"
-            >
-              Sign Up
-            </button>
           </div>
         </div>
       )}
 
-      {/* Timer */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 text-center">
-        <div className="mb-4">
-          <h2 className="text-lg font-semibold text-white mb-2">
-            {isBreak ? 'Break Time' : 'Study Session'}
-          </h2>
-          <div className={`text-4xl md:text-6xl font-bold mb-4 ${isBreak ? 'text-emerald-400' : 'text-blue-400'}`}>
-            {formatTime(time)}
+      {/* Timer Section */}
+      <div className="bg-white rounded-3xl p-12 border border-gray-200 text-center">
+        <div className="max-w-2xl mx-auto space-y-8">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              {isBreak ? 'Break Time' : 'Study Session'}
+            </h2>
+            <div className={`text-8xl lg:text-9xl font-bold mb-8 ${
+              isBreak ? 'text-emerald-600' : 'text-purple-600'
+            }`}>
+              {formatTime(time)}
+            </div>
+            
+            {!isBreak && (
+              <div className="mb-8">
+                <input
+                  type="text"
+                  value={currentSubject}
+                  onChange={(e) => setCurrentSubject(e.target.value)}
+                  placeholder="What are you studying?"
+                  className="w-full max-w-md bg-gray-50 border border-gray-200 rounded-xl px-6 py-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200 text-lg text-center"
+                  disabled={isRunning}
+                />
+              </div>
+            )}
           </div>
-          
-          {!isBreak && (
-            <input
-              type="text"
-              value={currentSubject}
-              onChange={(e) => setCurrentSubject(e.target.value)}
-              placeholder="What are you studying?"
-              className="w-full max-w-md bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 mb-4 text-sm"
-              disabled={isRunning}
-            />
-          )}
-        </div>
 
-        {/* Controls Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          {!isRunning ? (
+          {/* Controls */}
+          <div className="flex flex-wrap justify-center gap-4">
+            {!isRunning ? (
+              <button
+                onClick={handleStart}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-4 rounded-xl font-semibold transition-colors duration-200 flex items-center space-x-3"
+              >
+                <Play className="w-5 h-5" />
+                <span>Start</span>
+              </button>
+            ) : (
+              <button
+                onClick={handlePause}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white px-8 py-4 rounded-xl font-semibold transition-colors duration-200 flex items-center space-x-3"
+              >
+                <Pause className="w-5 h-5" />
+                <span>Pause</span>
+              </button>
+            )}
+            
             <button
-              onClick={handleStart}
-              className="flex items-center justify-center space-x-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl transition-colors duration-200 text-sm"
+              onClick={handleStop}
+              className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-xl font-semibold transition-colors duration-200 flex items-center space-x-3"
             >
-              <Play className="w-4 h-4" />
-              <span>Start</span>
+              <Square className="w-5 h-5" />
+              <span>Stop</span>
             </button>
-          ) : (
+            
             <button
-              onClick={handlePause}
-              className="flex items-center justify-center space-x-2 bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-xl transition-colors duration-200 text-sm"
+              onClick={handleReset}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-8 py-4 rounded-xl font-semibold transition-colors duration-200 flex items-center space-x-3"
             >
-              <Pause className="w-4 h-4" />
-              <span>Pause</span>
+              <RotateCcw className="w-5 h-5" />
+              <span>Reset</span>
             </button>
-          )}
-          
-          <button
-            onClick={handleStop}
-            className="flex items-center justify-center space-x-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl transition-colors duration-200 text-sm"
-          >
-            <Square className="w-4 h-4" />
-            <span>Stop</span>
-          </button>
-          
-          <button
-            onClick={handleReset}
-            className="flex items-center justify-center space-x-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-xl transition-colors duration-200 text-sm"
-          >
-            <RotateCcw className="w-4 h-4" />
-            <span>Reset</span>
-          </button>
+          </div>
         </div>
       </div>
 
-      {/* Recent Sessions and Tips Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      {/* Recent Sessions and Tips */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Recent Sessions */}
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-          <h3 className="text-lg font-semibold text-white mb-4">Recent Sessions</h3>
+        <div className="bg-white rounded-3xl p-8 border border-gray-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Recent Sessions</h3>
           
           {sessions.length > 0 ? (
-            <div className="space-y-2">
-              {sessions.map((session) => (
-                <div key={session.id} className="flex items-center justify-between p-2 bg-white/5 rounded-xl">
-                  <div className="flex items-center space-x-2">
-                    <Clock className="w-4 h-4 text-blue-400" />
-                    <span className="text-white font-medium text-sm">{session.subject}</span>
+            <div className="space-y-4">
+              {sessions.slice(0, 5).map((session) => (
+                <div key={session.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{session.subject}</p>
+                      <p className="text-gray-600 text-sm">{session.date}</p>
+                    </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-white text-sm">{session.duration} min</p>
-                    <p className="text-white/60 text-xs">{session.date}</p>
+                    <p className="font-bold text-gray-900">{session.duration}m</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-6">
-              <Clock className="w-8 h-8 text-white/30 mx-auto mb-2" />
-              <p className="text-white/70 text-sm">No sessions yet. Start your first session!</p>
+            <div className="text-center py-8">
+              <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-600">No sessions yet. Start your first study session!</p>
             </div>
           )}
         </div>
 
-        {/* Tips */}
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-          <h3 className="text-lg font-semibold text-white mb-4">Pomodoro Tips</h3>
-          <div className="grid grid-cols-1 gap-4">
-            <div className="space-y-2">
-              <h4 className="text-white font-medium text-sm">Study Session (25 min)</h4>
-              <ul className="text-white/70 text-xs space-y-1">
-                <li>• Focus on one task</li>
-                <li>• Avoid distractions</li>
-                <li>• Take notes if needed</li>
+        {/* Pomodoro Tips */}
+        <div className="bg-white rounded-3xl p-8 border border-gray-200">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Pomodoro Tips</h3>
+          <div className="space-y-6">
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
+                <div className="w-6 h-6 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <span className="text-purple-600 text-sm font-bold">25</span>
+                </div>
+                <span>Study Session</span>
+              </h4>
+              <ul className="text-gray-600 space-y-2 text-sm">
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                  <span>Focus on one task completely</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                  <span>Eliminate all distractions</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></span>
+                  <span>Take notes if needed</span>
+                </li>
               </ul>
             </div>
-            <div className="space-y-2">
-              <h4 className="text-white font-medium text-sm">Break Time (5 min)</h4>
-              <ul className="text-white/70 text-xs space-y-1">
-                <li>• Step away from your desk</li>
-                <li>• Stretch or walk around</li>
-                <li>• Hydrate and breathe</li>
+            
+            <div>
+              <h4 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
+                <div className="w-6 h-6 bg-emerald-100 rounded-lg flex items-center justify-center">
+                  <span className="text-emerald-600 text-sm font-bold">5</span>
+                </div>
+                <span>Break Time</span>
+              </h4>
+              <ul className="text-gray-600 space-y-2 text-sm">
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></span>
+                  <span>Step away from your workspace</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></span>
+                  <span>Stretch or walk around</span>
+                </li>
+                <li className="flex items-start space-x-2">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full mt-2 flex-shrink-0"></span>
+                  <span>Hydrate and breathe deeply</span>
+                </li>
               </ul>
             </div>
           </div>

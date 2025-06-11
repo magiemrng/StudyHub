@@ -58,41 +58,45 @@ const Sidebar: React.FC<SidebarProps> = ({
   }
 
   const SidebarContent = () => (
-    <>
+    <div className="h-full flex flex-col bg-white border-r border-gray-200">
       {/* Logo */}
-      <div className="flex items-center space-x-2 mb-4">
-        <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-          <Sparkles className="w-5 h-5 text-white" />
+      <div className="p-6 border-b border-gray-200">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-black rounded-2xl flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-black font-semibold text-xl tracking-tight">StudyHub</span>
         </div>
-        <span className="text-white font-bold text-lg">StudyHub</span>
       </div>
 
       {/* Guest Banner */}
       {isGuest && (
-        <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-xl p-3 mb-4">
-          <div className="flex items-center space-x-2 mb-2">
-            <Crown className="w-4 h-4 text-amber-400" />
-            <span className="text-amber-400 font-medium text-xs">Guest Mode</span>
+        <div className="mx-6 mt-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-4">
+          <div className="flex items-center space-x-3 mb-3">
+            <Crown className="w-5 h-5 text-amber-600" />
+            <span className="text-amber-800 font-semibold text-sm">Guest Mode</span>
           </div>
-          <p className="text-white/80 text-xs">
-            Sign up to save your data!
+          <p className="text-amber-700 text-xs leading-relaxed">
+            Sign up to save your data permanently and unlock all features.
           </p>
         </div>
       )}
 
-      {/* Navigation Grid */}
-      <nav className="grid grid-cols-1 gap-2 flex-1 mb-4">
+      {/* Navigation */}
+      <nav className="flex-1 p-6 space-y-2">
         {menuItems.map((item) => (
           <button
             key={item.id}
             onClick={() => handleMenuItemClick(item.id)}
-            className={`flex items-center space-x-3 px-3 py-2 rounded-xl transition-all duration-200 text-sm ${
+            className={`w-full flex items-center space-x-3 px-4 py-3 rounded-2xl transition-all duration-200 text-left group ${
               activeTool === item.id
-                ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 text-white'
-                : 'text-white/70 hover:bg-white/10 hover:text-white'
+                ? 'bg-gray-900 text-white'
+                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
             }`}
           >
-            <item.icon className="w-4 h-4 flex-shrink-0" />
+            <item.icon className={`w-5 h-5 ${
+              activeTool === item.id ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'
+            }`} />
             <span className="font-medium">{item.label}</span>
           </button>
         ))}
@@ -104,9 +108,9 @@ const Sidebar: React.FC<SidebarProps> = ({
               onOpenChat()
               setMobileMenuOpen(false)
             }}
-            className="flex items-center space-x-3 px-3 py-2 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 text-sm"
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 text-left group"
           >
-            <MessageCircle className="w-4 h-4 flex-shrink-0" />
+            <MessageCircle className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
             <span className="font-medium">Chat</span>
           </button>
         )}
@@ -117,40 +121,41 @@ const Sidebar: React.FC<SidebarProps> = ({
             onViewOffers()
             setMobileMenuOpen(false)
           }}
-          className="flex items-center space-x-3 px-3 py-2 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 text-sm"
+          className="w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 text-left group"
         >
-          <Tag className="w-4 h-4 flex-shrink-0" />
+          <Tag className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
           <span className="font-medium">Offers</span>
         </button>
       </nav>
 
       {/* Bottom Actions */}
-      <div className="space-y-2 pt-4 border-t border-white/10">
+      <div className="p-6 border-t border-gray-200 space-y-4">
         {user && (
-          <div className="px-3 py-2">
-            <p className="text-white/60 text-xs truncate">{user.email}</p>
+          <div className="px-4 py-3 bg-gray-50 rounded-2xl">
+            <p className="text-gray-900 font-medium text-sm truncate">{user.email}</p>
+            <p className="text-gray-500 text-xs">Authenticated User</p>
           </div>
         )}
         
         {user ? (
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 text-sm"
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 text-left group"
           >
-            <ArrowLeft className="w-4 h-4 flex-shrink-0" />
+            <ArrowLeft className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
             <span className="font-medium">Sign Out</span>
           </button>
         ) : (
           <button
             onClick={onBackToLanding}
-            className="w-full flex items-center space-x-3 px-3 py-2 rounded-xl text-white/70 hover:bg-white/10 hover:text-white transition-all duration-200 text-sm"
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 text-left group"
           >
-            <ArrowLeft className="w-4 h-4 flex-shrink-0" />
+            <ArrowLeft className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
             <span className="font-medium">Back to Home</span>
           </button>
         )}
       </div>
-    </>
+    </div>
   )
 
   return (
@@ -158,7 +163,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       {/* Mobile Menu Button */}
       <button
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-2 text-white"
+        className="lg:hidden fixed top-6 left-6 z-50 bg-white border border-gray-200 rounded-2xl p-3 text-gray-600 shadow-lg"
       >
         {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
@@ -172,12 +177,12 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex w-64 bg-white/5 backdrop-blur-md border-r border-white/10 p-4 flex-col">
+      <div className="hidden lg:flex w-80 h-screen sticky top-0">
         <SidebarContent />
       </div>
 
       {/* Mobile Sidebar */}
-      <div className={`lg:hidden fixed left-0 top-0 h-full w-64 bg-white/10 backdrop-blur-md border-r border-white/20 p-4 flex flex-col z-50 transform transition-transform duration-300 ${
+      <div className={`lg:hidden fixed left-0 top-0 h-full w-80 z-50 transform transition-transform duration-300 ${
         mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         <SidebarContent />

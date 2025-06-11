@@ -60,7 +60,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen bg-gray-50 flex">
       <Sidebar 
         activeTool={activeTool} 
         setActiveTool={handleToolChange}
@@ -69,9 +69,11 @@ const Dashboard: React.FC<DashboardProps> = ({
         onViewOffers={onViewOffers}
         isGuest={isGuest}
       />
-      <main className="flex-1 p-4 lg:p-6 lg:ml-0 ml-0">
+      <main className="flex-1 lg:ml-0 ml-0">
         <div className="lg:hidden h-16"></div> {/* Spacer for mobile menu button */}
-        {renderActiveTool()}
+        <div className="p-8 lg:p-12">
+          {renderActiveTool()}
+        </div>
       </main>
 
       <UserChatModal
