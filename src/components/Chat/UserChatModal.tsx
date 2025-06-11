@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { X, Send, MessageCircle, Users, Plus, Search, User, Hash, ArrowLeft, Menu, Info, Paperclip, File, Image } from 'lucide-react'
+import { X, Send, MessageCircle, Users, Plus, Search, User, Hash, ArrowLeft, Menu, Info, Paperclip, File, Image, Phone, Video, MoreVertical } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 
@@ -55,6 +55,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
   const [groupName, setGroupName] = useState('')
   const [sending, setSending] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [loading, setLoading] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { user } = useAuth()
@@ -68,7 +69,8 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (activeRoom) {
-      loadMessages(activeRoom)
+      setLoading(true)
+      loadMessages(activeRoom).finally(() => setLoading(false))
       
       // Set up real-time subscription for messages
       const subscription = supabase
@@ -220,6 +222,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
       setMessages(formattedMessages)
     } catch (error) {
       console.error('Error loading messages:', error)
+      setMessages([]) // Set empty array on error to prevent blank screen
     }
   }
 
@@ -281,7 +284,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
       setActiveRoom(newRoom.id)
       setShowUserList(false)
       setShowSidebar(false)
-      loadRooms()
+      await loadRooms() // Reload rooms to show the new one
     } catch (error) {
       console.error('Error creating direct message:', error)
     }
@@ -325,7 +328,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
       setShowSidebar(false)
       setGroupName('')
       setSelectedUsers([])
-      loadRooms()
+      await loadRooms()
     } catch (error) {
       console.error('Error creating group:', error)
     }
@@ -536,57 +539,57 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
   const safeMessages = messages || []
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-4">
-      <div className="bg-white/[0.02] backdrop-blur-xl rounded-none md:rounded-3xl border border-white/[0.08] w-full h-full md:w-full md:max-w-7xl md:h-[90vh] flex overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-0 md:p-6">
+      <div className="bg-white rounded-none md:rounded-3xl w-full h-full md:w-full md:max-w-7xl md:h-[90vh] flex overflow-hidden shadow-2xl border border-gray-200">
         
         {/* Sidebar */}
-        <div className={`${showSidebar ? 'flex' : 'hidden'} md:flex w-full md:w-80 border-r border-white/[0.08] flex-col bg-white/[0.01]`}>
+        <div className={`${showSidebar ? 'flex' : 'hidden'} md:flex w-full md:w-80 border-r border-gray-200 flex-col bg-gray-50`}>
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-white/[0.08]">
+          <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-white">
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                <MessageCircle className="w-4 h-4 text-white" />
+              <div className="w-10 h-10 bg-blue-600 rounded-2xl flex items-center justify-center">
+                <MessageCircle className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-xl font-medium text-white tracking-tight">Messages</h1>
+              <h1 className="text-xl font-semibold text-gray-900 tracking-tight">Messages</h1>
             </div>
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowUserList(!showUserList)}
-                className="w-9 h-9 bg-white/[0.06] hover:bg-white/[0.12] rounded-xl flex items-center justify-center transition-all duration-200 border border-white/[0.08]"
+                className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200"
               >
-                <Plus className="w-4 h-4 text-white/80" />
+                <Plus className="w-5 h-5 text-gray-600" />
               </button>
               <button
                 onClick={onClose}
-                className="w-9 h-9 bg-white/[0.06] hover:bg-white/[0.12] rounded-xl flex items-center justify-center transition-all duration-200 border border-white/[0.08] md:hidden"
+                className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200 md:hidden"
               >
-                <X className="w-4 h-4 text-white/80" />
+                <X className="w-5 h-5 text-gray-600" />
               </button>
             </div>
           </div>
 
           {/* Search */}
-          <div className="p-4 border-b border-white/[0.08]">
+          <div className="p-4 bg-white border-b border-gray-200">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search conversations..."
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl pl-10 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.06] transition-all duration-200 text-sm"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white transition-all duration-200 text-sm"
               />
             </div>
           </div>
 
           {/* New Chat Actions */}
           {showUserList && (
-            <div className="p-4 border-b border-white/[0.08] bg-white/[0.02]">
+            <div className="p-4 border-b border-gray-200 bg-blue-50">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-white/90 font-medium text-sm">Start New Chat</h3>
+                <h3 className="text-gray-900 font-medium text-sm">Start New Chat</h3>
                 <button
                   onClick={() => setShowUserList(false)}
-                  className="w-6 h-6 bg-white/[0.06] hover:bg-white/[0.12] rounded-lg flex items-center justify-center transition-all duration-200"
+                  className="w-6 h-6 bg-white hover:bg-gray-100 rounded-lg flex items-center justify-center transition-all duration-200"
                 >
-                  <X className="w-3 h-3 text-white/60" />
+                  <X className="w-3 h-3 text-gray-500" />
                 </button>
               </div>
               
@@ -596,7 +599,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                     setShowCreateGroup(false)
                     setShowUserList(true)
                   }}
-                  className="flex items-center justify-center space-x-2 bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/20 text-blue-400 py-2 rounded-xl text-xs font-medium transition-all duration-200"
+                  className="flex items-center justify-center space-x-2 bg-blue-100 hover:bg-blue-200 border border-blue-200 text-blue-700 py-2 rounded-xl text-xs font-medium transition-all duration-200"
                 >
                   <User className="w-3 h-3" />
                   <span>Direct</span>
@@ -606,7 +609,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                     setShowCreateGroup(true)
                     setShowUserList(false)
                   }}
-                  className="flex items-center justify-center space-x-2 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-400 py-2 rounded-xl text-xs font-medium transition-all duration-200"
+                  className="flex items-center justify-center space-x-2 bg-purple-100 hover:bg-purple-200 border border-purple-200 text-purple-700 py-2 rounded-xl text-xs font-medium transition-all duration-200"
                 >
                   <Users className="w-3 h-3" />
                   <span>Group</span>
@@ -614,13 +617,13 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               <div className="relative mb-3">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 text-white/40" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search users..."
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg pl-9 pr-3 py-2 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 text-xs"
+                  className="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 text-xs"
                 />
               </div>
 
@@ -629,19 +632,19 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                   <button
                     key={user.id}
                     onClick={() => createDirectMessage(user.user_id)}
-                    className="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-white/[0.06] transition-all duration-200 group"
+                    className="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-white transition-all duration-200 group"
                   >
                     <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-medium">
                       {getInitials(user.display_name || 'U')}
                     </div>
                     <div className="flex-1 text-left">
-                      <p className="text-white/90 text-xs font-medium">{user.display_name}</p>
+                      <p className="text-gray-900 text-xs font-medium">{user.display_name}</p>
                       <div className="flex items-center space-x-1">
                         <div className={`w-2 h-2 rounded-full ${
                           user.status === 'online' ? 'bg-green-400' : 
-                          user.status === 'away' ? 'bg-yellow-400' : 'bg-white/30'
+                          user.status === 'away' ? 'bg-yellow-400' : 'bg-gray-300'
                         }`}></div>
-                        <span className="text-white/50 text-xs capitalize">{user.status}</span>
+                        <span className="text-gray-500 text-xs capitalize">{user.status}</span>
                       </div>
                     </div>
                   </button>
@@ -652,18 +655,18 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
 
           {/* Create Group */}
           {showCreateGroup && (
-            <div className="p-4 border-b border-white/[0.08] bg-white/[0.02]">
+            <div className="p-4 border-b border-gray-200 bg-purple-50">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-white/90 font-medium text-sm">Create Group</h3>
+                <h3 className="text-gray-900 font-medium text-sm">Create Group</h3>
                 <button
                   onClick={() => {
                     setShowCreateGroup(false)
                     setSelectedUsers([])
                     setGroupName('')
                   }}
-                  className="w-6 h-6 bg-white/[0.06] hover:bg-white/[0.12] rounded-lg flex items-center justify-center transition-all duration-200"
+                  className="w-6 h-6 bg-white hover:bg-gray-100 rounded-lg flex items-center justify-center transition-all duration-200"
                 >
-                  <X className="w-3 h-3 text-white/60" />
+                  <X className="w-3 h-3 text-gray-500" />
                 </button>
               </div>
               
@@ -672,22 +675,22 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
                 placeholder="Group name"
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 text-xs mb-3"
+                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-purple-500 text-xs mb-3"
               />
               
               <div className="relative mb-3">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 text-white/40" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Add members..."
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg pl-9 pr-3 py-2 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 text-xs"
+                  className="w-full bg-white border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-purple-500 text-xs"
                 />
               </div>
 
               {selectedUsers.length > 0 && (
-                <div className="mb-3 text-blue-400 text-xs">
+                <div className="mb-3 text-purple-600 text-xs">
                   {selectedUsers.length} member(s) selected
                 </div>
               )}
@@ -699,18 +702,18 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                     onClick={() => toggleUserSelection(user.user_id)}
                     className={`w-full flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 ${
                       selectedUsers.includes(user.user_id) 
-                        ? 'bg-blue-500/20 border border-blue-500/30' 
-                        : 'hover:bg-white/[0.06]'
+                        ? 'bg-purple-100 border border-purple-200' 
+                        : 'hover:bg-white'
                     }`}
                   >
                     <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-medium">
                       {getInitials(user.display_name || 'U')}
                     </div>
                     <div className="flex-1 text-left">
-                      <p className="text-white/90 text-xs">{user.display_name}</p>
+                      <p className="text-gray-900 text-xs">{user.display_name}</p>
                     </div>
                     {selectedUsers.includes(user.user_id) && (
-                      <div className="w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                      <div className="w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs">✓</span>
                       </div>
                     )}
@@ -721,7 +724,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
               <button
                 onClick={createGroup}
                 disabled={!groupName.trim() || selectedUsers.length === 0}
-                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 rounded-lg text-xs font-medium transition-all duration-200"
+                className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-2 rounded-lg text-xs font-medium transition-all duration-200"
               >
                 Create Group
               </button>
@@ -737,8 +740,8 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                   setActiveRoom(room.id)
                   setShowSidebar(false)
                 }}
-                className={`w-full p-4 border-b border-white/[0.05] hover:bg-white/[0.04] transition-all duration-200 text-left ${
-                  activeRoom === room.id ? 'bg-white/[0.06] border-r-2 border-r-blue-500' : ''
+                className={`w-full p-4 border-b border-gray-100 hover:bg-gray-50 transition-all duration-200 text-left ${
+                  activeRoom === room.id ? 'bg-blue-50 border-r-2 border-r-blue-500' : ''
                 }`}
               >
                 <div className="flex items-center space-x-3">
@@ -751,27 +754,27 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                       )}
                     </div>
                     {!room.is_group && (room.participants || []).find(p => p.user_id !== user?.id)?.status === 'online' && (
-                      <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-gray-900"></div>
+                      <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-400 rounded-full border-2 border-white"></div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className="text-white/90 font-medium truncate text-sm">
+                      <h3 className="text-gray-900 font-medium truncate text-sm">
                         {getRoomDisplayName(room)}
                       </h3>
                       {room.last_message && (
-                        <span className="text-white/40 text-xs">
+                        <span className="text-gray-400 text-xs">
                           {formatTime(room.last_message.created_at)}
                         </span>
                       )}
                     </div>
                     {room.last_message && (
-                      <p className="text-white/50 text-xs truncate">
+                      <p className="text-gray-500 text-xs truncate">
                         {room.last_message.sender_name}: {room.last_message.content}
                       </p>
                     )}
                     {!room.last_message && (
-                      <p className="text-white/40 text-xs">No messages yet</p>
+                      <p className="text-gray-400 text-xs">No messages yet</p>
                     )}
                   </div>
                 </div>
@@ -780,26 +783,26 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
             
             {safeRooms.length === 0 && (
               <div className="p-8 text-center">
-                <MessageCircle className="w-12 h-12 text-white/20 mx-auto mb-3" />
-                <p className="text-white/50 text-sm mb-2">No conversations yet</p>
-                <p className="text-white/30 text-xs">Start a new chat to get started</p>
+                <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                <p className="text-gray-500 text-sm mb-2">No conversations yet</p>
+                <p className="text-gray-400 text-xs">Start a new chat to get started</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Chat Area */}
-        <div className={`${showSidebar ? 'hidden' : 'flex'} md:flex flex-1 flex-col`}>
+        <div className={`${showSidebar ? 'hidden' : 'flex'} md:flex flex-1 flex-col bg-white`}>
           {activeRoom ? (
             <>
               {/* Chat Header */}
-              <div className="flex items-center justify-between p-4 border-b border-white/[0.08] bg-white/[0.01]">
+              <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
                 <div className="flex items-center space-x-3">
                   <button
                     onClick={() => setShowSidebar(true)}
-                    className="md:hidden w-9 h-9 bg-white/[0.06] hover:bg-white/[0.12] rounded-xl flex items-center justify-center transition-all duration-200"
+                    className="md:hidden w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200"
                   >
-                    <ArrowLeft className="w-4 h-4 text-white/80" />
+                    <ArrowLeft className="w-5 h-5 text-gray-600" />
                   </button>
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white font-medium">
                     {safeRooms.find(r => r.id === activeRoom)?.is_group ? (
@@ -809,84 +812,104 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                     )}
                   </div>
                   <div>
-                    <h3 className="text-white/90 font-medium text-sm">
+                    <h3 className="text-gray-900 font-medium text-sm">
                       {getRoomDisplayName(safeRooms.find(r => r.id === activeRoom) || {} as ChatRoom)}
                     </h3>
-                    <p className="text-white/50 text-xs">
+                    <p className="text-gray-500 text-xs">
                       {(safeRooms.find(r => r.id === activeRoom)?.participants || []).length} members
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <button className="w-9 h-9 bg-white/[0.06] hover:bg-white/[0.12] rounded-xl flex items-center justify-center transition-all duration-200 border border-white/[0.08]">
-                    <Info className="w-4 h-4 text-white/60" />
+                  <button className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200">
+                    <Phone className="w-4 h-4 text-gray-600" />
+                  </button>
+                  <button className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200">
+                    <Video className="w-4 h-4 text-gray-600" />
+                  </button>
+                  <button className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200">
+                    <Info className="w-4 h-4 text-gray-600" />
                   </button>
                   <button
                     onClick={onClose}
-                    className="hidden md:flex w-9 h-9 bg-white/[0.06] hover:bg-white/[0.12] rounded-xl items-center justify-center transition-all duration-200 border border-white/[0.08]"
+                    className="hidden md:flex w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl items-center justify-center transition-all duration-200"
                   >
-                    <X className="w-4 h-4 text-white/60" />
+                    <X className="w-4 h-4 text-gray-600" />
                   </button>
                 </div>
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {safeMessages.map((message, index) => {
-                  const isOwn = message.sender_id === user?.id
-                  const showAvatar = index === 0 || safeMessages[index - 1].sender_id !== message.sender_id
-                  const showTime = index === safeMessages.length - 1 || 
-                    safeMessages[index + 1].sender_id !== message.sender_id ||
-                    new Date(safeMessages[index + 1].created_at).getTime() - new Date(message.created_at).getTime() > 300000 // 5 minutes
+              <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
+                {loading ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-gray-500">Loading messages...</div>
+                  </div>
+                ) : safeMessages.length === 0 ? (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <MessageCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500 text-sm">No messages yet</p>
+                      <p className="text-gray-400 text-xs">Start the conversation!</p>
+                    </div>
+                  </div>
+                ) : (
+                  safeMessages.map((message, index) => {
+                    const isOwn = message.sender_id === user?.id
+                    const showAvatar = index === 0 || safeMessages[index - 1].sender_id !== message.sender_id
+                    const showTime = index === safeMessages.length - 1 || 
+                      safeMessages[index + 1].sender_id !== message.sender_id ||
+                      new Date(safeMessages[index + 1].created_at).getTime() - new Date(message.created_at).getTime() > 300000 // 5 minutes
 
-                  return (
-                    <div
-                      key={message.id}
-                      className={`flex ${isOwn ? 'justify-end' : 'justify-start'} ${showAvatar ? 'mt-4' : 'mt-1'}`}
-                    >
-                      <div className={`flex items-end space-x-2 max-w-[80%] ${isOwn ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                        {!isOwn && showAvatar && (
-                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
-                            {getInitials(message.sender_name)}
-                          </div>
-                        )}
-                        {!isOwn && !showAvatar && (
-                          <div className="w-8 h-8 flex-shrink-0"></div>
-                        )}
-                        
-                        <div className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
+                    return (
+                      <div
+                        key={message.id}
+                        className={`flex ${isOwn ? 'justify-end' : 'justify-start'} ${showAvatar ? 'mt-6' : 'mt-1'}`}
+                      >
+                        <div className={`flex items-end space-x-2 max-w-[80%] ${isOwn ? 'flex-row-reverse space-x-reverse' : ''}`}>
                           {!isOwn && showAvatar && (
-                            <span className="text-white/60 text-xs mb-1 px-3">{message.sender_name}</span>
+                            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0">
+                              {getInitials(message.sender_name)}
+                            </div>
                           )}
-                          <div className={`px-4 py-3 rounded-2xl max-w-full break-words ${
-                            isOwn
-                              ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-br-md'
-                              : 'bg-white/[0.08] text-white/90 rounded-bl-md border border-white/[0.08]'
-                          }`}>
-                            {renderMessage(message)}
+                          {!isOwn && !showAvatar && (
+                            <div className="w-8 h-8 flex-shrink-0"></div>
+                          )}
+                          
+                          <div className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
+                            {!isOwn && showAvatar && (
+                              <span className="text-gray-500 text-xs mb-1 px-3">{message.sender_name}</span>
+                            )}
+                            <div className={`px-4 py-3 rounded-2xl max-w-full break-words ${
+                              isOwn
+                                ? 'bg-blue-600 text-white rounded-br-md'
+                                : 'bg-white text-gray-900 rounded-bl-md border border-gray-200'
+                            }`}>
+                              {renderMessage(message)}
+                            </div>
+                            {showTime && (
+                              <span className="text-gray-400 text-xs mt-1 px-3">
+                                {formatTime(message.created_at)}
+                              </span>
+                            )}
                           </div>
-                          {showTime && (
-                            <span className="text-white/30 text-xs mt-1 px-3">
-                              {formatTime(message.created_at)}
-                            </span>
-                          )}
                         </div>
                       </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
               {/* Message Input */}
-              <div className="p-4 border-t border-white/[0.08] bg-white/[0.01]">
+              <div className="p-4 border-t border-gray-200 bg-white">
                 <div className="flex items-end space-x-3">
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
-                    className="w-11 h-11 bg-white/[0.06] hover:bg-white/[0.12] disabled:opacity-50 rounded-2xl flex items-center justify-center transition-all duration-200 border border-white/[0.08]"
+                    className="w-11 h-11 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 rounded-2xl flex items-center justify-center transition-all duration-200"
                   >
-                    <Paperclip className="w-4 h-4 text-white/60" />
+                    <Paperclip className="w-4 h-4 text-gray-600" />
                   </button>
                   <div className="flex-1 relative">
                     <textarea
@@ -894,7 +917,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                       onChange={(e) => setNewMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder="Type a message..."
-                      className="w-full bg-white/[0.04] border border-white/[0.08] rounded-2xl px-4 py-3 pr-12 text-white placeholder-white/40 focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.06] resize-none transition-all duration-200 text-sm leading-relaxed"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-2xl px-4 py-3 pr-12 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:bg-white resize-none transition-all duration-200 text-sm leading-relaxed"
                       rows={1}
                       disabled={sending || uploading}
                       style={{ minHeight: '44px', maxHeight: '120px' }}
@@ -908,13 +931,13 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                   <button
                     onClick={sendMessage}
                     disabled={!newMessage.trim() || sending || uploading}
-                    className="w-11 h-11 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl flex items-center justify-center transition-all duration-200 shadow-lg"
+                    className="w-11 h-11 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl flex items-center justify-center transition-all duration-200 shadow-lg"
                   >
                     <Send className="w-4 h-4" />
                   </button>
                 </div>
                 {uploading && (
-                  <div className="mt-2 text-white/60 text-xs">Uploading file...</div>
+                  <div className="mt-2 text-gray-500 text-xs">Uploading file...</div>
                 )}
               </div>
 
@@ -928,13 +951,13 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
               />
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center bg-gray-50">
               <div className="text-center">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                  <MessageCircle className="w-10 h-10 text-white/30" />
+                <div className="w-20 h-20 bg-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                  <MessageCircle className="w-10 h-10 text-gray-400" />
                 </div>
-                <h3 className="text-white/70 text-xl font-medium mb-2">Select a conversation</h3>
-                <p className="text-white/40 text-sm">Choose from your existing conversations or start a new one</p>
+                <h3 className="text-gray-700 text-xl font-medium mb-2">Select a conversation</h3>
+                <p className="text-gray-500 text-sm">Choose from your existing conversations or start a new one</p>
               </div>
             </div>
           )}
