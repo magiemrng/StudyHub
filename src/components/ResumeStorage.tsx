@@ -243,87 +243,124 @@ const ResumeStorage: React.FC<ResumeStorageProps> = ({ isGuest = false, onSignUp
   const primaryResume = resumes.find(resume => resume.is_primary)
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-7xl mx-auto space-y-12">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Resume Storage</h1>
-          <p className="text-white/70 text-sm">Manage and organize your professional resumes</p>
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 tracking-tight">Resume Storage</h1>
+            <p className="text-xl text-gray-600 max-w-3xl leading-relaxed">
+              Manage and organize your professional resumes. Keep multiple versions, set a primary resume, 
+              and access your documents anytime.
+            </p>
+          </div>
+          <button
+            onClick={() => setShowUploadModal(true)}
+            className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200 flex items-center space-x-2"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Upload Resume</span>
+          </button>
         </div>
-        <button
-          onClick={() => setShowUploadModal(true)}
-          className="flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 py-2 rounded-xl transition-colors duration-200 text-sm"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Upload Resume</span>
-        </button>
+
+        {/* Statistics */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+            <FileText className="w-6 h-6 text-blue-600 mx-auto mb-3" />
+            <h3 className="text-gray-700 font-medium text-sm mb-1">Total Resumes</h3>
+            <p className="text-2xl font-bold text-gray-900">{resumes.length}</p>
+          </div>
+          
+          <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+            <User className="w-6 h-6 text-emerald-600 mx-auto mb-3" />
+            <h3 className="text-gray-700 font-medium text-sm mb-1">Primary Resume</h3>
+            <p className="text-2xl font-bold text-gray-900">{primaryResume ? '1' : '0'}</p>
+          </div>
+          
+          <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+            <Calendar className="w-6 h-6 text-purple-600 mx-auto mb-3" />
+            <h3 className="text-gray-700 font-medium text-sm mb-1">This Month</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {resumes.filter(r => new Date(r.created_at).getMonth() === new Date().getMonth()).length}
+            </p>
+          </div>
+          
+          <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+            <Download className="w-6 h-6 text-orange-600 mx-auto mb-3" />
+            <h3 className="text-gray-700 font-medium text-sm mb-1">Total Size</h3>
+            <p className="text-2xl font-bold text-gray-900">
+              {formatFileSize(resumes.reduce((total, resume) => total + resume.file_size, 0))}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Guest Banner */}
       {isGuest && (
-        <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-2xl p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
-            <div className="flex items-center space-x-3 md:col-span-3">
-              <Crown className="w-6 h-6 text-amber-400 flex-shrink-0" />
-              <div>
-                <h3 className="text-white font-semibold text-sm">Guest Mode - Files Not Saved</h3>
-                <p className="text-white/70 text-xs">Sign up to store your resumes permanently</p>
-              </div>
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-3xl p-8">
+          <div className="flex items-start space-x-4">
+            <Crown className="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" />
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Guest Mode - Files Not Saved</h3>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                You're using resume storage in guest mode. Your files won't be saved permanently. 
+                Sign up to store your resumes securely and access them from anywhere.
+              </p>
+              <button
+                onClick={onSignUp}
+                className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200"
+              >
+                Sign Up to Save Files
+              </button>
             </div>
-            <button
-              onClick={onSignUp}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm"
-            >
-              Sign Up
-            </button>
           </div>
         </div>
       )}
 
       {/* Primary Resume Card */}
       {primaryResume && (
-        <div className="bg-gradient-to-r from-emerald-500/10 to-teal-500/10 backdrop-blur-md rounded-2xl p-6 border border-emerald-500/20">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center">
-                <FileText className="w-6 h-6 text-white" />
+        <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-3xl p-8">
+          <div className="flex items-start justify-between mb-6">
+            <div className="flex items-center space-x-4">
+              <div className="w-16 h-16 bg-emerald-500 rounded-3xl flex items-center justify-center">
+                <FileText className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h3 className="text-white font-semibold text-lg">Primary Resume</h3>
-                <p className="text-emerald-400 text-sm">Your main resume for applications</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-1">Primary Resume</h3>
+                <p className="text-emerald-700">Your main resume for applications</p>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <button
                 onClick={() => window.open(primaryResume.file_url, '_blank')}
-                className="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors duration-200"
+                className="w-12 h-12 bg-white hover:bg-gray-50 rounded-2xl flex items-center justify-center transition-colors duration-200 border border-emerald-200"
               >
-                <Eye className="w-4 h-4 text-white" />
+                <Eye className="w-5 h-5 text-gray-600" />
               </button>
               <button
                 onClick={() => downloadResume(primaryResume.file_url, primaryResume.file_name)}
-                className="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors duration-200"
+                className="w-12 h-12 bg-white hover:bg-gray-50 rounded-2xl flex items-center justify-center transition-colors duration-200 border border-emerald-200"
               >
-                <Download className="w-4 h-4 text-white" />
+                <Download className="w-5 h-5 text-gray-600" />
               </button>
             </div>
           </div>
-          <div className="space-y-2">
-            <p className="text-white font-medium">{primaryResume.file_name}</p>
+          <div className="space-y-3">
+            <p className="text-gray-900 font-semibold text-lg">{primaryResume.file_name}</p>
             {primaryResume.description && (
-              <p className="text-white/70 text-sm">{primaryResume.description}</p>
+              <p className="text-gray-700">{primaryResume.description}</p>
             )}
-            <div className="flex items-center space-x-4 text-xs text-white/60">
+            <div className="flex items-center space-x-6 text-sm text-gray-600">
               <span>{formatFileSize(primaryResume.file_size)}</span>
               <span>•</span>
               <span>{formatDate(primaryResume.created_at)}</span>
             </div>
             {primaryResume.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1 mt-2">
+              <div className="flex flex-wrap gap-2 mt-3">
                 {primaryResume.tags.map((tag, index) => (
                   <span
                     key={index}
-                    className="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-lg text-xs"
+                    className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-sm font-medium"
                   >
                     {tag}
                   </span>
@@ -337,90 +374,61 @@ const ResumeStorage: React.FC<ResumeStorageProps> = ({ isGuest = false, onSignUp
       {/* Search and Filter */}
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-white/40" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search resumes..."
-            className="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+            className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-12 pr-4 py-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
           />
         </div>
-        <div className="flex items-center space-x-2">
-          <Filter className="w-4 h-4 text-white/60" />
+        <div className="flex items-center space-x-3">
+          <Filter className="w-5 h-5 text-gray-500" />
           <select
             value={selectedFilter}
             onChange={(e) => setSelectedFilter(e.target.value as any)}
-            className="bg-white/10 border border-white/20 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-emerald-400 text-sm"
+            className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-4 text-gray-900 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
           >
-            <option value="all" className="bg-gray-800">All Resumes</option>
-            <option value="primary" className="bg-gray-800">Primary Only</option>
-            <option value="recent" className="bg-gray-800">Recent (7 days)</option>
+            <option value="all">All Resumes</option>
+            <option value="primary">Primary Only</option>
+            <option value="recent">Recent (7 days)</option>
           </select>
         </div>
       </div>
 
-      {/* Statistics */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <FileText className="w-6 h-6 text-blue-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">Total Resumes</h3>
-          <p className="text-xl font-bold text-white">{resumes.length}</p>
-        </div>
-        
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <User className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">Primary Resume</h3>
-          <p className="text-xl font-bold text-white">{primaryResume ? '1' : '0'}</p>
-        </div>
-        
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <Calendar className="w-6 h-6 text-purple-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">This Month</h3>
-          <p className="text-xl font-bold text-white">
-            {resumes.filter(r => new Date(r.created_at).getMonth() === new Date().getMonth()).length}
-          </p>
-        </div>
-        
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <Download className="w-6 h-6 text-orange-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">Total Size</h3>
-          <p className="text-xl font-bold text-white">
-            {formatFileSize(resumes.reduce((total, resume) => total + resume.file_size, 0))}
-          </p>
-        </div>
-      </div>
-
       {/* Resume List */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-        <h2 className="text-lg font-semibold text-white mb-4">All Resumes</h2>
+      <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden">
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900">All Resumes</h2>
+        </div>
         
         {loading ? (
-          <div className="text-center py-8">
-            <div className="text-white text-lg">Loading resumes...</div>
+          <div className="p-12 text-center">
+            <div className="text-gray-500 text-lg">Loading resumes...</div>
           </div>
         ) : filteredResumes.length > 0 ? (
-          <div className="space-y-3">
+          <div className="divide-y divide-gray-200">
             {filteredResumes.map((resume) => (
-              <div key={resume.id} className="p-4 bg-white/5 rounded-xl border border-white/10 hover:bg-white/10 transition-all duration-200">
+              <div key={resume.id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4 flex-1">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-white" />
+                    <div className="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-blue-600" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center space-x-2 mb-1">
-                        <h3 className="text-white font-medium text-sm truncate">{resume.file_name}</h3>
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-gray-900 font-semibold truncate">{resume.file_name}</h3>
                         {resume.is_primary && (
-                          <span className="bg-emerald-500/20 text-emerald-400 px-2 py-1 rounded-lg text-xs font-medium">
+                          <span className="bg-emerald-100 text-emerald-700 px-2 py-1 rounded-lg text-xs font-medium">
                             Primary
                           </span>
                         )}
                       </div>
                       {resume.description && (
-                        <p className="text-white/60 text-xs mb-1 truncate">{resume.description}</p>
+                        <p className="text-gray-600 text-sm mb-2 truncate">{resume.description}</p>
                       )}
-                      <div className="flex items-center space-x-3 text-xs text-white/50">
+                      <div className="flex items-center space-x-4 text-xs text-gray-500">
                         <span>{formatFileSize(resume.file_size)}</span>
                         <span>•</span>
                         <span>{formatDate(resume.created_at)}</span>
@@ -430,13 +438,13 @@ const ResumeStorage: React.FC<ResumeStorageProps> = ({ isGuest = false, onSignUp
                           {resume.tags.slice(0, 3).map((tag, index) => (
                             <span
                               key={index}
-                              className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-lg text-xs"
+                              className="bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-xs"
                             >
                               {tag}
                             </span>
                           ))}
                           {resume.tags.length > 3 && (
-                            <span className="text-white/50 text-xs">+{resume.tags.length - 3} more</span>
+                            <span className="text-gray-500 text-xs">+{resume.tags.length - 3} more</span>
                           )}
                         </div>
                       )}
@@ -446,28 +454,28 @@ const ResumeStorage: React.FC<ResumeStorageProps> = ({ isGuest = false, onSignUp
                     {!resume.is_primary && (
                       <button
                         onClick={() => setPrimaryResume(resume.id)}
-                        className="text-emerald-400 hover:text-emerald-300 transition-colors duration-200 text-xs px-2 py-1 bg-emerald-500/10 rounded-lg"
+                        className="text-emerald-600 hover:text-emerald-700 transition-colors duration-200 text-xs px-3 py-2 bg-emerald-50 hover:bg-emerald-100 rounded-lg font-medium"
                       >
                         Set Primary
                       </button>
                     )}
                     <button
                       onClick={() => window.open(resume.file_url, '_blank')}
-                      className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-colors duration-200"
+                      className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors duration-200"
                     >
-                      <Eye className="w-4 h-4 text-white/70" />
+                      <Eye className="w-4 h-4 text-gray-600" />
                     </button>
                     <button
                       onClick={() => downloadResume(resume.file_url, resume.file_name)}
-                      className="w-8 h-8 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center transition-colors duration-200"
+                      className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-colors duration-200"
                     >
-                      <Download className="w-4 h-4 text-white/70" />
+                      <Download className="w-4 h-4 text-gray-600" />
                     </button>
                     <button
                       onClick={() => deleteResume(resume.id, resume.file_url)}
-                      className="w-8 h-8 bg-red-500/20 hover:bg-red-500/30 rounded-lg flex items-center justify-center transition-colors duration-200"
+                      className="w-10 h-10 bg-red-50 hover:bg-red-100 rounded-xl flex items-center justify-center transition-colors duration-200"
                     >
-                      <Trash2 className="w-4 h-4 text-red-400" />
+                      <Trash2 className="w-4 h-4 text-red-600" />
                     </button>
                   </div>
                 </div>
@@ -475,14 +483,22 @@ const ResumeStorage: React.FC<ResumeStorageProps> = ({ isGuest = false, onSignUp
             ))}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <FileText className="w-12 h-12 text-white/30 mx-auto mb-4" />
-            <p className="text-white/70 text-sm">
+          <div className="p-12 text-center">
+            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-6" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
               {searchQuery || selectedFilter !== 'all' ? 'No resumes match your search' : 'No resumes uploaded yet'}
-            </p>
-            <p className="text-white/50 text-xs mt-1">
+            </h3>
+            <p className="text-gray-600 mb-6">
               {!searchQuery && selectedFilter === 'all' && 'Upload your first resume to get started'}
             </p>
+            {!searchQuery && selectedFilter === 'all' && (
+              <button
+                onClick={() => setShowUploadModal(true)}
+                className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200"
+              >
+                Upload Your First Resume
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -490,58 +506,58 @@ const ResumeStorage: React.FC<ResumeStorageProps> = ({ isGuest = false, onSignUp
       {/* Upload Modal */}
       {showUploadModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 w-full max-w-md">
+          <div className="bg-white rounded-3xl p-8 w-full max-w-md">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-white">Upload Resume</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Upload Resume</h2>
               <button
                 onClick={() => setShowUploadModal(false)}
-                className="text-white/70 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-gray-700 transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-white/70 text-sm mb-2">Description (Optional)</label>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Description (Optional)</label>
                 <input
                   type="text"
                   value={uploadDescription}
                   onChange={(e) => setUploadDescription(e.target.value)}
                   placeholder="e.g., Software Engineer Resume 2024"
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                 />
               </div>
 
               <div>
-                <label className="block text-white/70 text-sm mb-2">Tags (Optional)</label>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Tags (Optional)</label>
                 <input
                   type="text"
                   value={uploadTags}
                   onChange={(e) => setUploadTags(e.target.value)}
                   placeholder="e.g., software, engineer, react, node"
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                 />
-                <p className="text-white/50 text-xs mt-1">Separate tags with commas</p>
+                <p className="text-gray-500 text-xs mt-1">Separate tags with commas</p>
               </div>
 
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-3">
                 <input
                   type="checkbox"
                   id="isPrimary"
                   checked={isPrimary}
                   onChange={(e) => setIsPrimary(e.target.checked)}
-                  className="w-4 h-4 text-emerald-500 bg-white/10 border-white/20 rounded focus:ring-emerald-500"
+                  className="w-4 h-4 text-emerald-600 bg-gray-50 border-gray-300 rounded focus:ring-emerald-500"
                 />
-                <label htmlFor="isPrimary" className="text-white/70 text-sm">
+                <label htmlFor="isPrimary" className="text-gray-700 text-sm font-medium">
                   Set as primary resume
                 </label>
               </div>
 
-              <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center">
-                <Upload className="w-8 h-8 text-white/50 mx-auto mb-2" />
-                <p className="text-white/70 text-sm mb-2">Click to upload or drag and drop</p>
-                <p className="text-white/50 text-xs">PDF, DOC, DOCX (Max 10MB)</p>
+              <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center">
+                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-700 font-medium mb-2">Click to upload or drag and drop</p>
+                <p className="text-gray-500 text-sm">PDF, DOC, DOCX (Max 10MB)</p>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -552,7 +568,7 @@ const ResumeStorage: React.FC<ResumeStorageProps> = ({ isGuest = false, onSignUp
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="mt-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200"
+                  className="mt-4 bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 disabled:opacity-50 transition-colors duration-200"
                 >
                   {uploading ? 'Uploading...' : 'Choose File'}
                 </button>

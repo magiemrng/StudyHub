@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, BookOpen, Trophy, TrendingUp, Crown } from 'lucide-react'
+import { Plus, BookOpen, Trophy, TrendingUp, Crown, Target, BarChart3, Award } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 
@@ -188,185 +188,253 @@ const GradeManager: React.FC<GradeManagerProps> = ({ isGuest = false, onSignUp }
   }
 
   const getGradeColor = (percentage: number) => {
-    if (percentage >= 90) return 'text-emerald-400'
-    if (percentage >= 80) return 'text-blue-400'
-    if (percentage >= 70) return 'text-yellow-400'
-    return 'text-red-400'
+    if (percentage >= 90) return 'text-emerald-600'
+    if (percentage >= 80) return 'text-blue-600'
+    if (percentage >= 70) return 'text-yellow-600'
+    return 'text-red-600'
   }
 
+  const overallAverage = parseFloat(calculateOverallAverage())
+  const highGrades = assignments.filter(a => (a.grade / a.maxGrade) * 100 >= 90).length
+  const recentAssignments = assignments.filter(a => {
+    const assignmentDate = new Date(a.date)
+    const weekAgo = new Date()
+    weekAgo.setDate(weekAgo.getDate() - 7)
+    return assignmentDate >= weekAgo
+  }).length
+
   return (
-    <div className="space-y-4">
-      {/* Header Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+    <div className="max-w-7xl mx-auto space-y-12">
+      {/* Header */}
+      <div className="space-y-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Grade Manager</h1>
-          <p className="text-white/70 text-sm">Track your assignments and academic performance</p>
-        </div>
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <p className="text-white/70 text-sm mb-1">Overall Average</p>
-          <p className={`text-2xl font-bold ${getGradeColor(parseFloat(calculateOverallAverage()))}`}>
-            {calculateOverallAverage()}%
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 tracking-tight">Grade Manager</h1>
+          <p className="text-xl text-gray-600 max-w-3xl leading-relaxed">
+            Track your assignments, projects, and academic performance across all subjects. 
+            Monitor your progress and identify areas for improvement.
           </p>
+        </div>
+
+        {/* Overall Performance */}
+        <div className="bg-white rounded-3xl p-8 border border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="md:col-span-2">
+              <h2 className="text-lg font-semibold text-gray-900 mb-2">Overall Average</h2>
+              <p className={`text-5xl font-bold mb-2 ${getGradeColor(overallAverage)}`}>{calculateOverallAverage()}%</p>
+              <p className="text-gray-600">Weighted average across all assignments</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Assignments</h3>
+              <p className="text-3xl font-bold text-gray-900">{assignments.length}</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">High Grades</h3>
+              <p className="text-3xl font-bold text-gray-900">{highGrades}</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Guest Banner */}
       {isGuest && (
-        <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-2xl p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
-            <div className="flex items-center space-x-3 md:col-span-3">
-              <Crown className="w-6 h-6 text-amber-400 flex-shrink-0" />
-              <div>
-                <h3 className="text-white font-semibold text-sm">Guest Mode - Data Not Saved</h3>
-                <p className="text-white/70 text-xs">Sign up to save your grades permanently</p>
-              </div>
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-3xl p-8">
+          <div className="flex items-start space-x-4">
+            <Crown className="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" />
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Guest Mode - Data Not Saved</h3>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                You're using the grade manager in guest mode. Your assignment data won't be saved permanently. 
+                Sign up to keep track of your grades and monitor your academic progress over time.
+              </p>
+              <button
+                onClick={onSignUp}
+                className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200"
+              >
+                Sign Up to Save Grades
+              </button>
             </div>
-            <button
-              onClick={onSignUp}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm"
-            >
-              Sign Up
-            </button>
           </div>
         </div>
       )}
 
-      {/* Subject Averages Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {subjects.map((subject) => (
-          <div key={subject} className="bg-white/10 backdrop-blur-md rounded-2xl p-3 border border-white/20 text-center">
-            <BookOpen className="w-5 h-5 text-blue-400 mx-auto mb-2" />
-            <h3 className="text-white font-medium text-xs mb-1 truncate">{subject}</h3>
-            <p className={`text-lg font-bold ${getGradeColor(parseFloat(calculateSubjectAverage(subject)))}`}>
-              {calculateSubjectAverage(subject)}%
-            </p>
+      {/* Subject Averages */}
+      {subjects.length > 0 && (
+        <div className="space-y-6">
+          <h2 className="text-3xl font-bold text-gray-900">Subject Performance</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {subjects.map((subject) => (
+              <div key={subject} className="bg-white rounded-2xl p-6 border border-gray-200">
+                <div className="flex items-center space-x-3 mb-4">
+                  <BookOpen className="w-6 h-6 text-blue-600" />
+                  <h3 className="text-lg font-semibold text-gray-900 truncate">{subject}</h3>
+                </div>
+                <p className={`text-3xl font-bold ${getGradeColor(parseFloat(calculateSubjectAverage(subject)))}`}>
+                  {calculateSubjectAverage(subject)}%
+                </p>
+                <p className="text-gray-600 text-sm mt-1">
+                  {assignments.filter(a => a.subject === subject).length} assignments
+                </p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      )}
 
       {/* Add Assignment */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-        <h2 className="text-lg font-semibold text-white mb-4">Add New Assignment</h2>
+      <div className="bg-white rounded-3xl p-8 border border-gray-200">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Add New Assignment</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-3 mb-3">
-          <div className="md:col-span-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-6">
+          <div className="lg:col-span-2">
+            <label className="block text-gray-700 text-sm font-medium mb-2">Assignment Name</label>
             <input
               type="text"
               value={newAssignment.name || ''}
               onChange={(e) => setNewAssignment({...newAssignment, name: e.target.value})}
-              placeholder="Assignment name"
-              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+              placeholder="Enter assignment name"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
             />
           </div>
           
           <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Subject</label>
             <input
               type="text"
               value={newAssignment.subject || ''}
               onChange={(e) => setNewAssignment({...newAssignment, subject: e.target.value})}
               placeholder="Subject"
-              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
             />
           </div>
           
           <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Grade</label>
             <input
               type="number"
               value={newAssignment.grade || ''}
               onChange={(e) => setNewAssignment({...newAssignment, grade: parseFloat(e.target.value) || 0})}
               placeholder="Grade"
-              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
             />
           </div>
           
           <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Max Grade</label>
+            <input
+              type="number"
+              value={newAssignment.maxGrade || ''}
+              onChange={(e) => setNewAssignment({...newAssignment, maxGrade: parseFloat(e.target.value) || 100})}
+              placeholder="Max"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
+            />
+          </div>
+          
+          <div>
+            <label className="block text-gray-700 text-sm font-medium mb-2">Weight %</label>
             <input
               type="number"
               value={newAssignment.weight || ''}
               onChange={(e) => setNewAssignment({...newAssignment, weight: parseFloat(e.target.value) || 0})}
-              placeholder="Weight %"
-              className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+              placeholder="Weight"
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
             />
           </div>
-          
-          <div>
-            <button
-              onClick={addAssignment}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center justify-center text-sm"
-            >
-              <Plus className="w-4 h-4" />
-            </button>
-          </div>
         </div>
+        
+        <button
+          onClick={addAssignment}
+          className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200 flex items-center space-x-2"
+        >
+          <Plus className="w-5 h-5" />
+          <span>Add Assignment</span>
+        </button>
       </div>
 
       {/* Assignments List */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-        <h2 className="text-lg font-semibold text-white mb-4">Assignments</h2>
+      <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden">
+        <div className="p-6 border-b border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900">All Assignments</h2>
+        </div>
         
         {assignments.length > 0 ? (
-          <div className="space-y-2">
+          <div className="divide-y divide-gray-200">
             {assignments.map((assignment) => {
               const percentage = (assignment.grade / assignment.maxGrade) * 100
               return (
-                <div key={assignment.id} className="p-3 bg-white/5 rounded-xl">
+                <div key={assignment.id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
                   <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-                        <h3 className="text-white font-medium text-sm">{assignment.name}</h3>
-                        <span className="text-white/60 text-sm">{assignment.subject}</span>
-                        <span className="text-white/60 text-sm">{assignment.date}</span>
-                        <div className="flex items-center justify-between">
-                          <span className={`font-bold text-sm ${getGradeColor(percentage)}`}>
-                            {assignment.grade}/{assignment.maxGrade} ({percentage.toFixed(1)}%)
-                          </span>
-                          <button
-                            onClick={() => deleteAssignment(assignment.id)}
-                            className="text-red-400 hover:text-red-300 transition-colors duration-200 text-lg"
-                          >
-                            ×
-                          </button>
-                        </div>
+                    <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-4">
+                      <div>
+                        <h3 className="font-semibold text-gray-900 mb-1">{assignment.name}</h3>
+                        <p className="text-gray-600 text-sm">{assignment.subject}</p>
                       </div>
-                      <div className="mt-1">
-                        <span className="text-white/60 text-xs">Weight: {assignment.weight}%</span>
+                      <div>
+                        <p className="text-gray-700 font-medium">Date</p>
+                        <p className="text-gray-600 text-sm">{new Date(assignment.date).toLocaleDateString()}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-700 font-medium">Grade</p>
+                        <p className="text-gray-900 font-semibold">{assignment.grade}/{assignment.maxGrade}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-700 font-medium">Percentage</p>
+                        <p className={`font-bold ${getGradeColor(percentage)}`}>
+                          {percentage.toFixed(1)}%
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-gray-700 font-medium">Weight</p>
+                        <p className="text-gray-600">{assignment.weight}%</p>
                       </div>
                     </div>
+                    <button
+                      onClick={() => deleteAssignment(assignment.id)}
+                      className="ml-4 w-10 h-10 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center transition-colors duration-200"
+                    >
+                      ×
+                    </button>
                   </div>
                 </div>
               )
             })}
           </div>
         ) : (
-          <div className="text-center py-8">
-            <Trophy className="w-12 h-12 text-white/30 mx-auto mb-4" />
-            <p className="text-white/70 text-sm">No assignments yet. Add your first assignment above!</p>
+          <div className="p-12 text-center">
+            <Trophy className="w-16 h-16 text-gray-300 mx-auto mb-6" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No assignments yet</h3>
+            <p className="text-gray-600 mb-6">Add your first assignment to start tracking grades</p>
+            <button
+              onClick={() => document.querySelector('input[placeholder="Enter assignment name"]')?.focus()}
+              className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200"
+            >
+              Add Your First Assignment
+            </button>
           </div>
         )}
       </div>
 
-      {/* Statistics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <TrendingUp className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">Total Assignments</h3>
-          <p className="text-xl font-bold text-white">{assignments.length}</p>
+      {/* Statistics */}
+      {assignments.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 text-center">
+            <TrendingUp className="w-8 h-8 text-emerald-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Assignments</h3>
+            <p className="text-3xl font-bold text-gray-900">{assignments.length}</p>
+          </div>
+          
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 text-center">
+            <BookOpen className="w-8 h-8 text-blue-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Subjects</h3>
+            <p className="text-3xl font-bold text-gray-900">{subjects.length}</p>
+          </div>
+          
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 text-center">
+            <Award className="w-8 h-8 text-yellow-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">High Grades (90%+)</h3>
+            <p className="text-3xl font-bold text-gray-900">{highGrades}</p>
+          </div>
         </div>
-        
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <BookOpen className="w-6 h-6 text-blue-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">Subjects</h3>
-          <p className="text-xl font-bold text-white">{subjects.length}</p>
-        </div>
-        
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <Trophy className="w-6 h-6 text-yellow-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">High Grades (90%+)</h3>
-          <p className="text-xl font-bold text-white">
-            {assignments.filter(a => (a.grade / a.maxGrade) * 100 >= 90).length}
-          </p>
-        </div>
-      </div>
+      )}
     </div>
   )
 }

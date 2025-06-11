@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Plus, Calendar, TrendingUp, Crown } from 'lucide-react'
+import { Plus, Calendar, TrendingUp, Crown, Users, BookOpen, Target } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 
@@ -192,162 +192,214 @@ const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({ isGuest = false, 
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+    <div className="max-w-7xl mx-auto space-y-12">
+      {/* Header */}
+      <div className="space-y-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Attendance Tracker</h1>
-          <p className="text-white/70 text-sm">Monitor your class attendance and performance</p>
+          <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 tracking-tight">Attendance Tracker</h1>
+          <p className="text-xl text-gray-600 max-w-3xl leading-relaxed">
+            Monitor your class attendance across all subjects. Track your progress and ensure you meet 
+            the minimum attendance requirements for each course.
+          </p>
         </div>
-        <button
-          onClick={addSubject}
-          className="flex items-center justify-center space-x-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-xl transition-colors duration-200 text-sm"
-        >
-          <Plus className="w-4 h-4" />
-          <span>Add Subject</span>
-        </button>
+
+        {/* Overall Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+            <Calendar className="w-8 h-8 text-blue-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Classes</h3>
+            <p className="text-3xl font-bold text-gray-900">{overallStats.totalClasses}</p>
+          </div>
+          
+          <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+            <TrendingUp className="w-8 h-8 text-emerald-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Classes Attended</h3>
+            <p className="text-3xl font-bold text-gray-900">{overallStats.attendedClasses}</p>
+          </div>
+          
+          <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center">
+            <Target className="w-8 h-8 text-purple-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Average Attendance</h3>
+            <p className="text-3xl font-bold text-gray-900">{overallStats.averagePercentage}%</p>
+          </div>
+        </div>
       </div>
 
       {/* Guest Banner */}
       {isGuest && (
-        <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-2xl p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 items-center">
-            <div className="flex items-center space-x-3 md:col-span-3">
-              <Crown className="w-6 h-6 text-amber-400 flex-shrink-0" />
-              <div>
-                <h3 className="text-white font-semibold text-sm">Guest Mode - Data Not Saved</h3>
-                <p className="text-white/70 text-xs">Sign up to save your attendance data permanently</p>
-              </div>
+        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-3xl p-8">
+          <div className="flex items-start space-x-4">
+            <Crown className="w-8 h-8 text-amber-600 flex-shrink-0 mt-1" />
+            <div className="flex-1">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Guest Mode - Data Not Saved</h3>
+              <p className="text-gray-700 mb-6 leading-relaxed">
+                You're using the attendance tracker in guest mode. Your attendance data won't be saved permanently. 
+                Sign up to keep track of your attendance records and monitor your progress over time.
+              </p>
+              <button
+                onClick={onSignUp}
+                className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200"
+              >
+                Sign Up to Save Progress
+              </button>
             </div>
-            <button
-              onClick={onSignUp}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 text-sm"
-            >
-              Sign Up
-            </button>
           </div>
         </div>
       )}
 
-      {/* Overall Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <Calendar className="w-6 h-6 text-blue-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">Total Classes</h3>
-          <p className="text-xl font-bold text-white">{overallStats.totalClasses}</p>
+      {/* Subject Management */}
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <h2 className="text-3xl font-bold text-gray-900">Your Subjects</h2>
+          <button
+            onClick={addSubject}
+            className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200 flex items-center space-x-2"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Add Subject</span>
+          </button>
         </div>
-        
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <TrendingUp className="w-6 h-6 text-emerald-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">Classes Attended</h3>
-          <p className="text-xl font-bold text-white">{overallStats.attendedClasses}</p>
-        </div>
-        
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 text-center">
-          <TrendingUp className="w-6 h-6 text-purple-400 mx-auto mb-2" />
-          <h3 className="text-white/70 text-xs mb-1">Average Attendance</h3>
-          <p className="text-xl font-bold text-white">{overallStats.averagePercentage}%</p>
+
+        {/* Subjects List */}
+        <div className="bg-white rounded-3xl border border-gray-200 overflow-hidden">
+          {safeSubjects.length > 0 ? (
+            <div className="divide-y divide-gray-200">
+              {safeSubjects.map((subject, index) => {
+                const percentage = calculatePercentage(subject.attendedClasses, subject.totalClasses)
+                const status = getAttendanceStatus(subject.attendedClasses, subject.totalClasses, subject.requiredPercentage)
+                const classesNeeded = calculateClassesNeeded(subject.attendedClasses, subject.totalClasses, subject.requiredPercentage)
+                
+                return (
+                  <div key={subject.id} className="p-6 hover:bg-gray-50 transition-colors duration-200">
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                      <div className="md:col-span-1 flex items-center justify-center">
+                        <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center">
+                          <span className="text-gray-600 font-semibold">{index + 1}</span>
+                        </div>
+                      </div>
+                      
+                      <div className="md:col-span-4">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Subject Name</label>
+                        <input
+                          type="text"
+                          value={subject.name}
+                          onChange={(e) => updateSubject(subject.id, 'name', e.target.value)}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
+                          placeholder="Enter subject name"
+                        />
+                      </div>
+                      
+                      <div className="md:col-span-2">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Total Classes</label>
+                        <input
+                          type="number"
+                          value={subject.totalClasses}
+                          onChange={(e) => updateSubject(subject.id, 'totalClasses', parseInt(e.target.value) || 0)}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
+                          min="0"
+                        />
+                      </div>
+                      
+                      <div className="md:col-span-2">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Attended</label>
+                        <input
+                          type="number"
+                          value={subject.attendedClasses}
+                          onChange={(e) => updateSubject(subject.id, 'attendedClasses', parseInt(e.target.value) || 0)}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
+                          min="0"
+                          max={subject.totalClasses}
+                        />
+                      </div>
+                      
+                      <div className="md:col-span-2">
+                        <label className="block text-gray-700 text-sm font-medium mb-2">Required %</label>
+                        <input
+                          type="number"
+                          value={subject.requiredPercentage}
+                          onChange={(e) => updateSubject(subject.id, 'requiredPercentage', parseInt(e.target.value) || 75)}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
+                          min="0"
+                          max="100"
+                        />
+                      </div>
+                      
+                      <div className="md:col-span-1 text-center">
+                        <div className={`text-2xl font-bold mb-1 ${status === 'good' ? 'text-emerald-600' : 'text-red-600'}`}>
+                          {percentage}%
+                        </div>
+                        {status === 'warning' && classesNeeded > 0 && (
+                          <p className="text-xs text-red-600">
+                            Need {classesNeeded} more
+                          </p>
+                        )}
+                        {status === 'good' && (
+                          <p className="text-xs text-emerald-600">
+                            On track!
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className="mt-4">
+                      <div className="w-full bg-gray-200 rounded-full h-3">
+                        <div 
+                          className={`h-3 rounded-full transition-all duration-300 ${
+                            status === 'good' ? 'bg-emerald-500' : 'bg-red-500'
+                          }`}
+                          style={{ width: `${Math.min(parseFloat(percentage), 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <div className="p-12 text-center">
+              <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-6" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No subjects added yet</h3>
+              <p className="text-gray-600 mb-6">Add your first subject to start tracking attendance</p>
+              <button
+                onClick={addSubject}
+                className="bg-black text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-800 transition-colors duration-200"
+              >
+                Add Your First Subject
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Subject List */}
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20">
-        <h2 className="text-lg font-semibold text-white mb-4">Subjects</h2>
-        
-        <div className="space-y-3">
-          {safeSubjects.map((subject) => {
-            const percentage = calculatePercentage(subject.attendedClasses, subject.totalClasses)
-            const status = getAttendanceStatus(subject.attendedClasses, subject.totalClasses, subject.requiredPercentage)
-            const classesNeeded = calculateClassesNeeded(subject.attendedClasses, subject.totalClasses, subject.requiredPercentage)
-            
-            return (
-              <div key={subject.id} className="p-3 bg-white/5 rounded-xl">
-                <div className="grid grid-cols-1 md:grid-cols-6 gap-3 items-center">
-                  <div className="md:col-span-2">
-                    <input
-                      type="text"
-                      value={subject.name}
-                      onChange={(e) => updateSubject(subject.id, 'name', e.target.value)}
-                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 text-sm"
-                      placeholder="Subject name"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-white/70 text-xs mb-1">Total</label>
-                    <input
-                      type="number"
-                      value={subject.totalClasses}
-                      onChange={(e) => updateSubject(subject.id, 'totalClasses', parseInt(e.target.value) || 0)}
-                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-400 text-sm"
-                      min="0"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-white/70 text-xs mb-1">Attended</label>
-                    <input
-                      type="number"
-                      value={subject.attendedClasses}
-                      onChange={(e) => updateSubject(subject.id, 'attendedClasses', parseInt(e.target.value) || 0)}
-                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-400 text-sm"
-                      min="0"
-                      max={subject.totalClasses}
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-white/70 text-xs mb-1">Required %</label>
-                    <input
-                      type="number"
-                      value={subject.requiredPercentage}
-                      onChange={(e) => updateSubject(subject.id, 'requiredPercentage', parseInt(e.target.value) || 75)}
-                      className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-400 text-sm"
-                      min="0"
-                      max="100"
-                    />
-                  </div>
-                  
-                  <div className="text-center">
-                    <div className={`text-lg font-bold ${status === 'good' ? 'text-emerald-400' : 'text-red-400'}`}>
-                      {percentage}%
-                    </div>
-                    {status === 'warning' && classesNeeded > 0 && (
-                      <p className="text-xs text-red-400 mt-1">
-                        Need {classesNeeded} classes
-                      </p>
-                    )}
-                    {status === 'good' && (
-                      <p className="text-xs text-emerald-400 mt-1">
-                        On track!
-                      </p>
-                    )}
-                  </div>
-                </div>
-                
-                {/* Progress Bar */}
-                <div className="mt-3">
-                  <div className="w-full bg-white/10 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        status === 'good' ? 'bg-emerald-400' : 'bg-red-400'
-                      }`}
-                      style={{ width: `${Math.min(parseFloat(percentage), 100)}%` }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-        
-        {safeSubjects.length === 0 && (
-          <div className="text-center py-8">
-            <Calendar className="w-12 h-12 text-white/30 mx-auto mb-4" />
-            <p className="text-white/70 text-sm">No subjects added yet. Add your first subject to start tracking!</p>
+      {/* Statistics */}
+      {safeSubjects.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 text-center">
+            <BookOpen className="w-8 h-8 text-blue-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Subjects</h3>
+            <p className="text-3xl font-bold text-gray-900">{safeSubjects.length}</p>
           </div>
-        )}
-      </div>
+          
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 text-center">
+            <TrendingUp className="w-8 h-8 text-emerald-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Good Attendance</h3>
+            <p className="text-3xl font-bold text-gray-900">
+              {safeSubjects.filter(s => 
+                parseFloat(calculatePercentage(s.attendedClasses, s.totalClasses)) >= s.requiredPercentage
+              ).length}
+            </p>
+          </div>
+          
+          <div className="bg-white rounded-3xl p-8 border border-gray-200 text-center">
+            <Users className="w-8 h-8 text-purple-600 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Classes This Week</h3>
+            <p className="text-3xl font-bold text-gray-900">
+              {Math.floor(overallStats.totalClasses / 15) || 0}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
