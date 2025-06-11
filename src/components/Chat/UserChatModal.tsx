@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { X, Send, MessageCircle, Users, Plus, Search, User, Hash, ArrowLeft, Menu, Info, Paperclip, File, Image, Phone, Video, MoreVertical } from 'lucide-react'
+import { X, Send, MessageCircle, Users, Plus, Search, User, Hash, ArrowLeft, Menu, Info, Paperclip, File, Image } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
 
@@ -821,12 +821,6 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
                   </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <button className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200">
-                    <Phone className="w-4 h-4 text-gray-600" />
-                  </button>
-                  <button className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200">
-                    <Video className="w-4 h-4 text-gray-600" />
-                  </button>
                   <button className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200">
                     <Info className="w-4 h-4 text-gray-600" />
                   </button>
