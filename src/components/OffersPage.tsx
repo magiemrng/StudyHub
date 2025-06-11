@@ -258,70 +258,70 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="p-4">
-        <nav className="max-w-6xl mx-auto flex justify-between items-center">
-          <button
-            onClick={onBackToLanding}
-            className="flex items-center space-x-2 text-white/80 hover:text-white transition-colors"
-          >
-            <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <span className="font-bold text-lg">StudyHub</span>
-          </button>
-          <div className="flex items-center space-x-2">
-            {user && (
-              <button
-                onClick={() => setShowAddForm(true)}
-                className="flex items-center space-x-2 bg-emerald-500 hover:bg-emerald-600 text-white px-3 py-2 rounded-lg transition-colors text-sm"
-              >
-                <Plus className="w-4 h-4" />
-                <span className="hidden sm:inline">Add Offer</span>
-              </button>
-            )}
+      <header className="border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <nav className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
             <button
-              onClick={onSignUp}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-4 py-2 rounded-lg transition-all duration-300 text-sm"
+              onClick={onBackToLanding}
+              className="flex items-center space-x-3 text-black hover:text-gray-700 transition-colors"
             >
-              Sign Up
+              <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <span className="font-semibold text-lg tracking-tight">StudyHub</span>
             </button>
+            <div className="flex items-center space-x-4">
+              {user && (
+                <button
+                  onClick={() => setShowAddForm(true)}
+                  className="flex items-center space-x-2 bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-xl transition-colors text-sm font-medium"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span className="hidden sm:inline">Add Offer</span>
+                </button>
+              )}
+              <button
+                onClick={onSignUp}
+                className="bg-black hover:bg-gray-800 text-white px-6 py-2 rounded-xl transition-all duration-200 text-sm font-medium"
+              >
+                Sign Up
+              </button>
+            </div>
           </div>
         </nav>
       </header>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm rounded-full px-3 py-1 mb-4">
-            <Crown className="w-3 h-3 text-yellow-400" />
-            <span className="text-white/90 text-xs">Special Student Offers</span>
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2 mb-8">
+            <Crown className="w-4 h-4 text-gray-600" />
+            <span className="text-gray-700 text-sm font-medium">Special Student Offers</span>
           </div>
           
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-black mb-8 leading-tight tracking-tight">
             Exclusive Deals
             <br />
-            <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
-              For Students
-            </span>
+            For Students
           </h1>
           
-          <p className="text-base text-white/80 mb-6 max-w-2xl mx-auto">
-            Discover amazing discounts on software, books, courses, and tools.
+          <p className="text-lg md:text-xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Discover amazing discounts on software, books, courses, and tools that help you succeed academically.
           </p>
         </div>
 
         {/* Category Filter */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
           {categories.map((category) => (
             <button
               key={category.id}
               onClick={() => setSelectedCategory(category.id)}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
+              className={`px-6 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                 selectedCategory === category.id
-                  ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white'
-                  : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+                  ? 'bg-black text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
               {category.name}
@@ -330,21 +330,21 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
         </div>
 
         {/* Student Offers */}
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-6">
+        <div className="mb-20">
+          <h2 className="text-3xl md:text-4xl font-bold text-black text-center mb-12">
             Current Student Offers
           </h2>
           
           {loading ? (
-            <div className="text-center py-8">
-              <div className="text-white text-lg">Loading offers...</div>
+            <div className="text-center py-16">
+              <div className="text-gray-500 text-lg">Loading offers...</div>
             </div>
           ) : filteredOffers.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredOffers.map((offer) => (
-                <div key={offer.id} className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden border border-white/20 hover:bg-white/15 transition-all duration-300">
+                <div key={offer.id} className="bg-white rounded-3xl overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300">
                   {/* Offer Image */}
-                  <div className="relative h-32 overflow-hidden">
+                  <div className="relative h-48 overflow-hidden">
                     <img
                       src={offer.image_url}
                       alt={offer.title}
@@ -355,7 +355,7 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
                       }}
                     />
                     {offer.discount_percentage > 0 && (
-                      <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                      <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                         -{offer.discount_percentage}%
                       </div>
                     )}
@@ -367,41 +367,41 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
                   </div>
 
                   {/* Offer Content */}
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-emerald-400 text-xs font-medium capitalize">
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-gray-600 text-sm font-medium capitalize bg-gray-100 px-3 py-1 rounded-full">
                         {offer.category}
                       </span>
                       {user && user.id === offer.created_by && (
-                        <div className="flex items-center space-x-1">
+                        <div className="flex items-center space-x-2">
                           <button
                             onClick={() => startEdit(offer)}
-                            className="p-1 text-white/60 hover:text-white transition-colors"
+                            className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
                           >
-                            <Edit className="w-3 h-3" />
+                            <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => deleteOffer(offer.id)}
-                            className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                            className="p-2 text-red-500 hover:text-red-700 transition-colors"
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       )}
                     </div>
                     
-                    <h3 className="text-base font-semibold text-white mb-2">{offer.title}</h3>
-                    <p className="text-white/70 text-xs mb-3 line-clamp-2">{offer.description}</p>
+                    <h3 className="text-xl font-bold text-black mb-3">{offer.title}</h3>
+                    <p className="text-gray-600 text-sm mb-4 leading-relaxed line-clamp-3">{offer.description}</p>
                     
                     {offer.price && (
-                      <div className="mb-3">
-                        <span className="text-emerald-400 font-bold">{offer.price}</span>
+                      <div className="mb-4">
+                        <span className="text-2xl font-bold text-black">{offer.price}</span>
                       </div>
                     )}
 
                     {offer.expires_at && !isExpired(offer.expires_at) && (
-                      <div className="mb-3 text-yellow-400 text-xs">
-                        <Clock className="w-3 h-3 inline mr-1" />
+                      <div className="mb-4 text-orange-600 text-sm flex items-center">
+                        <Clock className="w-4 h-4 mr-2" />
                         Expires: {new Date(offer.expires_at).toLocaleDateString()}
                       </div>
                     )}
@@ -410,104 +410,118 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
                       href={offer.offer_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className={`w-full flex items-center justify-center space-x-2 py-2 rounded-lg font-semibold transition-all duration-200 text-sm ${
+                      className={`w-full flex items-center justify-center space-x-2 py-3 rounded-xl font-semibold transition-all duration-200 text-sm ${
                         isExpired(offer.expires_at)
-                          ? 'bg-gray-500 text-gray-300 cursor-not-allowed'
-                          : 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white'
+                          ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                          : 'bg-black hover:bg-gray-800 text-white'
                       }`}
                       onClick={(e) => isExpired(offer.expires_at) && e.preventDefault()}
                     >
                       <span>{isExpired(offer.expires_at) ? 'Expired' : 'Get Offer'}</span>
-                      {!isExpired(offer.expires_at) && <ExternalLink className="w-3 h-3" />}
+                      {!isExpired(offer.expires_at) && <ExternalLink className="w-4 h-4" />}
                     </a>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <Tag className="w-12 h-12 text-white/30 mx-auto mb-4" />
-              <h3 className="text-white/70 text-lg mb-2">No offers available</h3>
-              <p className="text-white/50 text-sm">Check back later for new deals!</p>
+            <div className="text-center py-16">
+              <Tag className="w-16 h-16 text-gray-300 mx-auto mb-6" />
+              <h3 className="text-xl font-semibold text-black mb-2">No offers available</h3>
+              <p className="text-gray-600 text-sm">Check back later for new deals!</p>
             </div>
           )}
         </div>
 
         {/* Pricing Plans */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-          <h2 className="lg:col-span-3 text-2xl md:text-3xl font-bold text-white text-center mb-6">
-            StudyHub Pricing Plans
-          </h2>
-          {plans.map((plan, index) => (
-            <div
-              key={index}
-              className={`relative bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 ${
-                plan.popular ? 'ring-2 ring-emerald-400 scale-105' : ''
-              } hover:bg-white/15 transition-all duration-300`}
-            >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
-                    <Star className="w-3 h-3" />
-                    <span>Popular</span>
-                  </div>
-                </div>
-              )}
-
-              <div className="text-center mb-4">
-                <h3 className="text-lg font-bold text-white mb-1">{plan.name}</h3>
-                <p className="text-white/70 mb-3 text-xs">{plan.description}</p>
-                <div className="mb-4">
-                  <span className="text-2xl font-bold text-white">{plan.price}</span>
-                  <span className="text-white/70 ml-1 text-xs">/{plan.period}</span>
-                </div>
-              </div>
-
-              <div className="space-y-2 mb-4">
-                {plan.features.slice(0, 5).map((feature, featureIndex) => (
-                  <div key={featureIndex} className="flex items-center space-x-2">
-                    <Check className="w-3 h-3 text-emerald-400 flex-shrink-0" />
-                    <span className="text-white/90 text-xs">{feature}</span>
-                  </div>
-                ))}
-                
-                {plan.limitations.map((limitation, limitIndex) => (
-                  <div key={limitIndex} className="flex items-center space-x-2 opacity-60">
-                    <X className="w-3 h-3 text-red-400 flex-shrink-0" />
-                    <span className="text-white/70 text-xs">{limitation}</span>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                onClick={onSignUp}
-                className={`w-full bg-gradient-to-r ${plan.color} hover:opacity-90 text-white py-2 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2 text-sm`}
+        <div className="mb-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
+              StudyHub Pricing Plans
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Choose the plan that fits your academic needs and budget
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {plans.map((plan, index) => (
+              <div
+                key={index}
+                className={`relative bg-white rounded-3xl p-8 border-2 transition-all duration-300 hover:shadow-lg ${
+                  plan.popular ? 'border-black scale-105' : 'border-gray-200 hover:border-gray-300'
+                }`}
               >
-                <span>{plan.buttonText}</span>
-                <ArrowRight className="w-3 h-3" />
-              </button>
-            </div>
-          ))}
+                {plan.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <div className="bg-black text-white px-6 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
+                      <Star className="w-4 h-4" />
+                      <span>Most Popular</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold text-black mb-2">{plan.name}</h3>
+                  <p className="text-gray-600 mb-6">{plan.description}</p>
+                  <div className="mb-6">
+                    <span className="text-4xl font-bold text-black">{plan.price}</span>
+                    <span className="text-gray-600 ml-2">/{plan.period}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mb-8">
+                  {plan.features.slice(0, 6).map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-start space-x-3">
+                      <Check className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-700 text-sm">{feature}</span>
+                    </div>
+                  ))}
+                  
+                  {plan.limitations.map((limitation, limitIndex) => (
+                    <div key={limitIndex} className="flex items-start space-x-3 opacity-60">
+                      <X className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                      <span className="text-gray-600 text-sm">{limitation}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={onSignUp}
+                  className={`w-full py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${
+                    plan.popular
+                      ? 'bg-black hover:bg-gray-800 text-white'
+                      : 'bg-gray-100 hover:bg-gray-200 text-black'
+                  }`}
+                >
+                  <span>{plan.buttonText}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* CTA Section */}
-        <div className="text-center bg-gradient-to-r from-emerald-500/20 to-teal-500/20 backdrop-blur-md rounded-2xl p-6 border border-emerald-500/30">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+        <div className="text-center bg-gray-50 rounded-3xl p-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-black mb-6">
             Ready to Transform Your Studies?
           </h2>
-          <p className="text-base text-white/80 mb-6 max-w-xl mx-auto">
-            Join thousands of students who've improved their academic performance.
+          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Join thousands of students who've improved their academic performance with StudyHub's 
+            comprehensive suite of tools and exclusive offers.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
             <button
               onClick={onSignUp}
-              className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300"
+              className="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
             >
-              Start Free Trial
+              <span>Start Free Trial</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={onBackToLanding}
-              className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 border border-white/20"
+              className="border border-gray-300 hover:border-gray-400 text-black px-8 py-4 rounded-xl font-semibold transition-all duration-200"
             >
               Learn More
             </button>
@@ -518,9 +532,9 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
       {/* Add/Edit Offer Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 border border-white/20 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-white">
+          <div className="bg-white rounded-3xl p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-black">
                 {editingOffer ? 'Edit Offer' : 'Add New Offer'}
               </h2>
               <button
@@ -538,92 +552,92 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
                     expires_at: ''
                   })
                 }}
-                className="text-white/70 hover:text-white transition-colors"
+                className="text-gray-500 hover:text-gray-700 transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-6">
               <div>
-                <label className="block text-white/70 text-sm mb-1">Title *</label>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Title *</label>
                 <input
                   type="text"
                   value={newOffer.title}
                   onChange={(e) => setNewOffer({...newOffer, title: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                   placeholder="Enter offer title"
                 />
               </div>
 
               <div>
-                <label className="block text-white/70 text-sm mb-1">Description *</label>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Description *</label>
                 <textarea
                   value={newOffer.description}
                   onChange={(e) => setNewOffer({...newOffer, description: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                   placeholder="Describe the offer"
-                  rows={2}
+                  rows={3}
                 />
               </div>
 
               <div>
-                <label className="block text-white/70 text-sm mb-1">Image URL *</label>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Image URL *</label>
                 <input
                   type="url"
                   value={newOffer.image_url}
                   onChange={(e) => setNewOffer({...newOffer, image_url: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
 
               <div>
-                <label className="block text-white/70 text-sm mb-1">Offer Link *</label>
+                <label className="block text-gray-700 text-sm font-medium mb-2">Offer Link *</label>
                 <input
                   type="url"
                   value={newOffer.offer_link}
                   onChange={(e) => setNewOffer({...newOffer, offer_link: e.target.value})}
-                  className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                   placeholder="https://example.com/offer"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-white/70 text-sm mb-1">Price</label>
+                  <label className="block text-gray-700 text-sm font-medium mb-2">Price</label>
                   <input
                     type="text"
                     value={newOffer.price}
                     onChange={(e) => setNewOffer({...newOffer, price: e.target.value})}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                     placeholder="$19.99"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-white/70 text-sm mb-1">Discount %</label>
+                  <label className="block text-gray-700 text-sm font-medium mb-2">Discount %</label>
                   <input
                     type="number"
                     value={newOffer.discount_percentage}
                     onChange={(e) => setNewOffer({...newOffer, discount_percentage: parseInt(e.target.value) || 0})}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white placeholder-white/50 focus:outline-none focus:border-emerald-400 text-sm"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                     min="0"
                     max="100"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-white/70 text-sm mb-1">Category</label>
+                  <label className="block text-gray-700 text-sm font-medium mb-2">Category</label>
                   <select
                     value={newOffer.category}
                     onChange={(e) => setNewOffer({...newOffer, category: e.target.value})}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-400 text-sm"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                   >
                     {categories.slice(1).map((category) => (
-                      <option key={category.id} value={category.id} className="bg-gray-800">
+                      <option key={category.id} value={category.id}>
                         {category.name}
                       </option>
                     ))}
@@ -631,19 +645,19 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
                 </div>
 
                 <div>
-                  <label className="block text-white/70 text-sm mb-1">Expires At</label>
+                  <label className="block text-gray-700 text-sm font-medium mb-2">Expires At</label>
                   <input
                     type="date"
                     value={newOffer.expires_at}
                     onChange={(e) => setNewOffer({...newOffer, expires_at: e.target.value})}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-emerald-400 text-sm"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:border-gray-400 focus:bg-white transition-all duration-200"
                   />
                 </div>
               </div>
 
               <button
                 onClick={saveOffer}
-                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-2 rounded-lg font-semibold transition-all duration-200 text-sm"
+                className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-xl font-semibold transition-all duration-200"
               >
                 {editingOffer ? 'Update Offer' : 'Create Offer'}
               </button>
