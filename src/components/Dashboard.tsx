@@ -12,6 +12,7 @@ import UserChatModal from './Chat/UserChatModal'
 interface DashboardProps {
   onBackToLanding: () => void
   onViewOffers: () => void
+  onViewAdminOffers?: () => void
   isGuest?: boolean
   onGuestToolUse?: () => void
   onSignUp?: () => void
@@ -22,6 +23,7 @@ type ActiveTool = 'home' | 'gpa' | 'attendance' | 'timer' | 'grades' | 'schedule
 const Dashboard: React.FC<DashboardProps> = ({ 
   onBackToLanding, 
   onViewOffers,
+  onViewAdminOffers,
   isGuest = false, 
   onGuestToolUse,
   onSignUp 
@@ -67,6 +69,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         onBackToLanding={onBackToLanding}
         onOpenChat={() => setChatModalOpen(true)}
         onViewOffers={onViewOffers}
+        onViewAdminOffers={onViewAdminOffers}
         isGuest={isGuest}
       />
       <main className="flex-1 lg:ml-0 ml-0">

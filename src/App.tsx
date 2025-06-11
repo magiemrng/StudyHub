@@ -3,11 +3,12 @@ import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Landing from './components/Landing'
 import Dashboard from './components/Dashboard'
 import OffersPage from './components/OffersPage'
+import AdminOffers from './components/AdminOffers'
 import AuthModal from './components/Auth/AuthModal'
 import NewsletterModal from './components/NewsletterModal'
 
 function AppContent() {
-  const [currentView, setCurrentView] = useState<'landing' | 'dashboard' | 'guest' | 'offers'>('landing')
+  const [currentView, setCurrentView] = useState<'landing' | 'dashboard' | 'guest' | 'offers' | 'admin-offers'>('landing')
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; mode: 'signin' | 'signup' }>({
     isOpen: false,
     mode: 'signin'
@@ -62,12 +63,19 @@ function AppContent() {
             onBackToLanding={() => setCurrentView('landing')}
           />
         )
+      case 'admin-offers':
+        return (
+          <AdminOffers
+            onBackToOffers={() => setCurrentView('offers')}
+          />
+        )
       case 'dashboard':
       case 'guest':
         return (
           <Dashboard 
             onBackToLanding={() => setCurrentView('landing')}
             onViewOffers={() => setCurrentView('offers')}
+            onViewAdminOffers={() => setCurrentView('admin-offers')}
             isGuest={!user}
             onGuestToolUse={handleGuestToolUse}
             onSignUp={() => setAuthModal({ isOpen: true, mode: 'signup' })}

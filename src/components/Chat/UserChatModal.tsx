@@ -561,7 +561,7 @@ const UserChatModal: React.FC<UserChatModalProps> = ({ isOpen, onClose }) => {
               </button>
               <button
                 onClick={onClose}
-                className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200 md:hidden"
+                className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200"
               >
                 <X className="w-5 h-5 text-gray-600" />
               </button>

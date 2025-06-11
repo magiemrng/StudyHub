@@ -13,7 +13,8 @@ import {
   Tag,
   Menu,
   X,
-  FileText
+  FileText,
+  Settings
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 
@@ -23,6 +24,7 @@ interface SidebarProps {
   onBackToLanding: () => void
   onOpenChat: () => void
   onViewOffers: () => void
+  onViewAdminOffers?: () => void
   isGuest?: boolean
 }
 
@@ -32,6 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   onBackToLanding, 
   onOpenChat,
   onViewOffers,
+  onViewAdminOffers,
   isGuest = false 
 }) => {
   const { signOut, user } = useAuth()
@@ -126,6 +129,20 @@ const Sidebar: React.FC<SidebarProps> = ({
           <Tag className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
           <span className="font-medium">Offers</span>
         </button>
+
+        {/* Admin Offers Button - Only for authenticated users */}
+        {user && onViewAdminOffers && (
+          <button
+            onClick={() => {
+              onViewAdminOffers()
+              setMobileMenuOpen(false)
+            }}
+            className="w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200 text-left group"
+          >
+            <Settings className="w-5 h-5 text-gray-400 group-hover:text-gray-600" />
+            <span className="font-medium">Admin Offers</span>
+          </button>
+        )}
       </nav>
 
       {/* Bottom Actions */}
