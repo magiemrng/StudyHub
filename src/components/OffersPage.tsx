@@ -20,7 +20,9 @@ import {
   Plus,
   Edit,
   Trash2,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Settings,
+  User
 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
@@ -43,13 +45,14 @@ interface StudentOffer {
 interface OffersPageProps {
   onSignUp: () => void
   onBackToLanding: () => void
+  onViewAdminOffers?: () => void
 }
 
-const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) => {
+const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding, onViewAdminOffers }) => {
   const [offers, setOffers] = useState<StudentOffer[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
-  const { user } = useAuth()
+  const { user, signOut } = useAuth()
 
   const categories = [
     { id: 'all', name: 'All' },
@@ -82,6 +85,11 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
     }
   }
 
+  const handleSignOut = async () => {
+    await signOut()
+    onBackToLanding()
+  }
+
   const safeOffers = offers || []
   const filteredOffers = selectedCategory === 'all' 
     ? safeOffers 
@@ -107,13 +115,45 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
               </div>
               <span className="font-semibold text-lg tracking-tight">StudyHub</span>
             </button>
+            
             <div className="flex items-center space-x-4">
-              <button
-                onClick={onSignUp}
-                className="bg-black hover:bg-gray-800 text-white px-6 py-2 rounded-xl transition-all duration-200 text-sm font-medium"
-              >
-                Sign Up Free
-              </button>
+              {user ? (
+                <>
+                  {/* Admin Offers Button - Only for authenticated users */}
+                  {onViewAdminOffers && (
+                    <button
+                      onClick={onViewAdminOffers}
+                      className="flex items-center space-x-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl transition-all duration-200 text-sm font-medium"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span className="hidden sm:inline">Admin</span>
+                    </button>
+                  )}
+                  
+                  {/* User Menu */}
+                  <div className="flex items-center space-x-3">
+                    <div className="flex items-center space-x-2 bg-gray-100 px-3 py-2 rounded-xl">
+                      <User className="w-4 h-4 text-gray-600" />
+                      <span className="text-gray-700 text-sm font-medium truncate max-w-32">
+                        {user.email?.split('@')[0]}
+                      </span>
+                    </div>
+                    <button
+                      onClick={handleSignOut}
+                      className="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded-xl transition-all duration-200 text-sm font-medium"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <button
+                  onClick={onSignUp}
+                  className="bg-black hover:bg-gray-800 text-white px-6 py-2 rounded-xl transition-all duration-200 text-sm font-medium"
+                >
+                  Sign Up Free
+                </button>
+              )}
             </div>
           </div>
         </nav>
@@ -282,13 +322,15 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
                 </div>
               </div>
               
-              <button
-                onClick={onSignUp}
-                className="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 mx-auto"
-              >
-                <span>Get Started Free</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              {!user && (
+                <button
+                  onClick={onSignUp}
+                  className="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 mx-auto"
+                >
+                  <span>Get Started Free</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -303,19 +345,31 @@ const OffersPage: React.FC<OffersPageProps> = ({ onSignUp, onBackToLanding }) =>
             to help you succeed in your educational journey.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-            <button
-              onClick={onSignUp}
-              className="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
-            >
-              <span>Start Free</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button
-              onClick={onBackToLanding}
-              className="border border-gray-300 hover:border-gray-400 text-black px-8 py-4 rounded-xl font-semibold transition-all duration-200"
-            >
-              Learn More
-            </button>
+            {!user ? (
+              <>
+                <button
+                  onClick={onSignUp}
+                  className="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
+                >
+                  <span>Start Free</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={onBackToLanding}
+                  className="border border-gray-300 hover:border-gray-400 text-black px-8 py-4 rounded-xl font-semibold transition-all duration-200"
+                >
+                  Learn More
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={onBackToLanding}
+                className="bg-black hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2"
+              >
+                <span>Back to Dashboard</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>

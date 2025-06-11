@@ -61,6 +61,7 @@ function AppContent() {
           <OffersPage
             onSignUp={() => setAuthModal({ isOpen: true, mode: 'signup' })}
             onBackToLanding={() => setCurrentView('landing')}
+            onViewAdminOffers={() => setCurrentView('admin-offers')}
           />
         )
       case 'admin-offers':
